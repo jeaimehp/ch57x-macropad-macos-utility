@@ -3,6 +3,10 @@ options:
   bundleId: com.micropadstudio.app
   deploymentTarget:
     macOS: "14.0"
+packages:
+  Yams:
+    url: https://github.com/jpsim/Yams
+    from: 6.0.0
 settings:
   base:
     SWIFT_VERSION: "5.9"
@@ -14,6 +18,10 @@ targets:
     platform: macOS
     sources:
       - path: MicroPadStudio
+      - path: vendor/ch57x-keyboard-tool
+        buildPhase: resources
+    dependencies:
+      - package: Yams
     settings:
       base:
         PRODUCT_NAME: "$(TARGET_NAME)"

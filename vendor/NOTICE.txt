@@ -1,0 +1,2 @@
+Bundled: ch57x-keyboard-tool v1.7.0 (MIT) https://github.com/kriomant/ch57x-keyboard-tool
+Used unmodified as the device programming backend for MicroPad Studio.

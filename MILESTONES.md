@@ -16,10 +16,10 @@ based on https://github.com/kriomant/ch57x-keyboard-tool
 - Xcode project (SwiftUI, macOS 14+), repo layout, `.gitignore`, `pickupandgo.md`, this plan.
 - **Test**: app builds & launches empty window. Commit.
 
-### M1 — Core plumbing: model + device + flash  `(1–2 days)`
+### M1 — Core plumbing: model + device + flash  `(1–2 days)` ✅ DONE (final flash test awaits user consent)
 - Swift model of the mapping YAML (layers/buttons/knob, `model`, `rows`, `columns`, `knobs`, `orientation`).
 - Bundle `ch57x-keyboard-tool` binary; device detection (USB 1189:8890 present?); `validate`; `upload` with progress/error UI.
-- **Test**: edit a mapping in-app → validate rejects bad key names (e.g. `esc`) → flash a config to the real pad and confirm it works. Commit.
+- **Test**: ✅ selftest harness (parse→emit→round-trip→CLI validate PASS), ✅ self-contained bundle (PASS under empty $HOME), ✅ IOKit detect vs real pad (`DETECTED 1189:8890`), ✅ GUI launch stable. ⏳ real pad flash via app — awaiting user go-ahead (destructive).
 
 ### M2 — Pad editor GUI  `(2–3 days)`
 - Visual 3×2 + knob layout; click a button/knob-slot to assign an action; layer tabs (3); action picker covering the full `doc/actions.md` vocabulary (keys, modifiers, sequences, mouse, media, timed); orientation setting; live YAML preview.

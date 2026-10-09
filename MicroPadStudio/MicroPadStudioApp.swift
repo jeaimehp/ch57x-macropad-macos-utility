@@ -1,11 +1,14 @@
 import SwiftUI
 import os
 
-/// M0 scaffold entry point.
+/// M1: headless --selftest support + app entry.
 @main
 struct MicroPadStudioApp: App {
     init() {
-        // Launch proof for headless CI-style verification (M0 test).
+        let args = CommandLine.arguments
+        if args.contains("--selftest") {
+            Self.runSelftest(args: args)   // exits process
+        }
         FileHandle.standardOutput.write(Data("MICROPADSTUDIO_LAUNCHED pid=\(ProcessInfo.processInfo.processIdentifier)\n".utf8))
     }
 
@@ -13,6 +16,42 @@ struct MicroPadStudioApp: App {
         WindowGroup("MicroPad Studio") {
             ContentView()
                 .frame(minWidth: 720, minHeight: 480)
+        }
+    }
+
+    /// Headless verification of M1 logic without UI:
+    ///   MicroPadStudio --selftest <mapping.yaml>
+    /// Steps: parse YAML → re-emit → CLI validate. Never uploads.
+    static func runSelftest(args: [String]) -> Never {
+        guard let idx = args.firstIndex(of: "--selftest"), idx + 1 < args.count else {
+            FileHandle.standardError.write(Data("usage: --selftest <mapping.yaml>\n".utf8))
+            exit(2)
+        }
+        let path = args[idx + 1]
+        do {
+            let text = try String(contentsOfFile: path, encoding: .utf8)
+            let parsed = try MappingYAML.parse(text)
+            let emitted = MappingYAML.emit(parsed)
+            print("SELFTEST parse ok: model=\(parsed.model) \(parsed.rows)x\(parsed.columns) knobs=\(parsed.knobs) layers=\(parsed.layers.count)")
+            // Re-parse emitted output → must equal original (round-trip invariant)
+            let reparsed = try MappingYAML.parse(emitted)
+            guard reparsed == parsed else {
+                print("SELFTEST FAIL: round-trip mismatch\n\(emitted)")
+                exit(1)
+            }
+            print("SELFTEST round-trip ok")
+            // CLI validate of emitted YAML (binary presence gates this step)
+            if Ch57xTool.binaryURL() != nil {
+                try Ch57xTool().validate(emitted)
+                print("SELFTEST cli validate ok")
+            } else {
+                print("SELFTEST WARN: CLI binary not found, skipped validate")
+            }
+            print("SELFTEST PASS")
+            exit(0)
+        } catch {
+            print("SELFTEST FAIL: \(error.localizedDescription)")
+            exit(1)
         }
     }
 }

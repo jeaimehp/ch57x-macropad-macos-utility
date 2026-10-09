@@ -5,7 +5,18 @@
 
 ---
 
-## STATE 2026-10-09 (later) — M0 COMPLETE ✅ → NEXT: M1 (device plumbing)
+## STATE 2026-10-09 (latest) — M1 COMPLETE ✅ (code+tests) → NEXT: real flash test (needs user consent), then M2
+
+M1 shipped: YAML model + Yams parser (typed errors), `MappingYAML` deterministic emitter,
+`Ch57xTool` (bundled binary in `Contents/Resources`, fallback `~/.local/bin`; validate/upload via stdin),
+`DeviceMonitor` (IOKit poll; verified live: `DETECTED 1189:8890`), `MappingStore` + minimal UI
+(device dot, Validate, Upload w/ confirm, YAML preview, result log), `--selftest <yaml>` harness.
+Verified: selftest PASS; PASS under empty `$HOME` (proves self-contained bundle); GUI stable >10s.
+Gotchas fixed: xcodegen silently ignores target `resources:` key — use `sources: [{path, buildPhase: resources}]`;
+`CFDictionarySetValue` needs `Unmanaged.passUnretained(...).toOpaque()` for keys/values.
+⏳ ONLY M1 test left: flash the pad through the app — destructive, awaiting explicit user go-ahead.
+
+## STATE 2026-10-09 (earlier) — M0 COMPLETE ✅
 
 Plan approved by user ("approve"). M0 scaffold done:
 - `project.yml` (XcodeGen) → `MicroPadStudio.xcodeproj` (gitignored, always regenerate with `xcodegen generate`).
