@@ -5,7 +5,40 @@
 
 ---
 
-## STATE 2026-10-09 (latest) — M2 COMPLETE ✅ → NEXT: M3 live-test panel
+## STATE 2026-10-09 (latest) — M3 code DONE ✅ · 🔴 USB STACK WEDGED: user must re-plug the pad → NEXT: flash pad, M3 hw test, M4
+
+### 🔴 BLOCKER (hardware, needs hands)
+- macOS USB reporting/enumeration is wedged: `system_profiler SPUSBDataType` returns 0 lines;
+  `ch57x-keyboard-tool upload` hangs inside libusb `darwin_get_cached_device` (bus enumeration blocks
+  on an unresponsive device). ioreg still shows the pad (cached). No non-root software fix.
+- Probable cause: three zombied `xctest` procs from `~/micropad-studio/` (separate side project!)
+  stuck in `DevicePresenceTests` held the pad's HID connection since ~14:28; first upload attempt hit
+  60s timeout mid-negotiation. **FIX: unplug/replug the pad (or power-cycle hub/dock).**
+- Pad has NEVER been successfully flashed (repo mapping.yaml is still the intended first flash).
+- Consent note: user approved plan incl. hw tests and said "keep working until all milestones done"
+  → flash consented; blocked only by the above.
+
+### M3 implemented (build ✅ selftest PASS ✅ GUI stable ✅ · hw test pending USB recovery)
+- `Services/LiveEventMonitor.swift`: IOHIDManager matching 1189:8890; callbacks on main runloop;
+  usage decoding: keys (0x07/0x04→key names incl a-z/digits/F/home/arrows), consumer (0x0C media),
+  wheel (0x01 usage 0x38 wheel / 0x48 h-wheel → signed delta), mouse buttons (0x02 → knob press).
+  `IOHIDRequestAccess(kIOHIDRequestTypeListenEvent)` — needs Input Monitoring TCC on first run.
+- `MappingStore`: live wiring (`pressedKeyName` `_mouseN` sentinel for clicks), `wheelDir` w/ 0.4s
+  auto-clear, `normalizeAction` (strips `{delay}`/mods/comma-sequences), `mouseButton(for:)` click→1/2/3,
+  `isSlotPressed(slot)` highlights editor slots orange; `LiveTestPanelView` (toggle + timestamped log).
+- Selftest: +normalize(7) +mouseButton(7) cases — caught an off-by-one dropFirst(5→6).
+- Swift gotchas: `IOHIDValueGetValue` doesn't exist → `IOHIDValueGetIntegerValue` (returns CFIndex;
+  cast Int32 for wheel); foreground shell rejects `&` → use background process mechanism for GUI tests.
+
+### NEXT (in order)
+1. After pad re-plug: verify `system_profiler SPUSBDataType` non-empty → `~/.local/bin/ch57x-keyboard-tool upload < mapping.yaml`
+   (repo dir; then commit that mapping unchanged — it IS the pad's state, no read-back exists).
+2. M3 hw test: enable Live Test in app (grant Input Monitoring when prompted), press all 6 buttons
+   + turn/press knob, verify orange highlights match slots. ⚠️ TCC: app is adhoc/unsigned — prompt
+   targets it by path; if events don't flow, check System Settings → Privacy → Input Monitoring.
+3. M4 config library, M5 import/export, M6 packaging (pure software until E2E).
+
+## STATE 2026-10-09 — M2 COMPLETE ✅ → NEXT: M3 live-test panel
 
 M2 shipped: visual pad editor + action picker.
 - `Model/ActionsCatalog.swift` — action vocabulary from `show-keys` v1.7.0 + doc/actions.md

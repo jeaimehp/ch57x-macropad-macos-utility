@@ -31,6 +31,8 @@ struct PadEditorView: View {
             }
             .padding(.vertical, 6)
 
+            LiveTestPanelView(store: store)
+
             Spacer(minLength: 0)
         }
     }
@@ -39,6 +41,7 @@ struct PadEditorView: View {
     private func padButton(row: Int, col: Int) -> some View {
         let slot = MappingStore.Slot.button(row: row, col: col)
         let selected = store.selection == slot
+        let pressed = store.isSlotPressed(slot)
         Button {
             store.selection = slot
         } label: {
@@ -55,12 +58,15 @@ struct PadEditorView: View {
             .frame(width: 96, height: 72)
             .background(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(selected ? Color.accentColor.opacity(0.25) : Color(nsColor: .controlBackgroundColor))
+                    .fill(pressed ? Color.orange.opacity(0.55)
+                                  : selected ? Color.accentColor.opacity(0.25)
+                                  : Color(nsColor: .controlBackgroundColor))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
-                    .strokeBorder(selected ? Color.accentColor : Color.secondary.opacity(0.35),
-                                  lineWidth: selected ? 2 : 1)
+                    .strokeBorder(pressed ? .orange
+                                  : selected ? Color.accentColor : Color.secondary.opacity(0.35),
+                                  lineWidth: (pressed || selected) ? 2 : 1)
             )
         }
         .buttonStyle(.plain)
@@ -79,6 +85,7 @@ struct PadEditorView: View {
     @ViewBuilder
     private func knobSegment(_ slot: MappingStore.Slot, label: String, symbol: String) -> some View {
         let selected = store.selection == slot
+        let pressed = store.isSlotPressed(slot)
         Button {
             store.selection = slot
         } label: {
@@ -94,14 +101,56 @@ struct PadEditorView: View {
             .frame(width: 150, height: 34)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(selected ? Color.accentColor.opacity(0.25) : Color(nsColor: .controlBackgroundColor))
+                    .fill(pressed ? Color.orange.opacity(0.55)
+                                  : selected ? Color.accentColor.opacity(0.25)
+                                  : Color(nsColor: .controlBackgroundColor))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .strokeBorder(selected ? Color.accentColor : Color.secondary.opacity(0.35),
-                                  lineWidth: selected ? 2 : 1)
+                    .strokeBorder(pressed ? .orange
+                                  : selected ? Color.accentColor : Color.secondary.opacity(0.35),
+                                  lineWidth: (pressed || selected) ? 2 : 1)
             )
         }
         .buttonStyle(.plain)
+    }
+}
+
+/// Toggle + event feed for the M3 live-test panel (IOHIDManager listen).
+struct LiveTestPanelView: View {
+    @ObservedObject var store: MappingStore
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Toggle(isOn: Binding(get: { store.liveOn },
+                                     set: { store.setLive(on: $0) })) {
+                    Label("Live Test", systemImage: "bolt.horizontal.circle")
+                }
+                .toggleStyle(.button)
+                .controlSize(.small)
+                if store.liveOn && !store.liveAccessGranted {
+                    Text("⚠︎ grant Input Monitoring in System Settings")
+                        .font(.caption2).foregroundStyle(.orange)
+                }
+                Spacer()
+                if !store.liveLog.isEmpty {
+                    Button("Clear") { store.liveLog.removeAll() }
+                        .controlSize(.small).buttonStyle(.link)
+                }
+            }
+            if !store.liveLog.isEmpty {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 1) {
+                        ForEach(store.liveLog.prefix(12), id: \.self) { line in
+                            Text(line).font(.system(.caption2, design: .monospaced))
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .frame(maxHeight: 70)
+            }
+        }
+        .padding(.top, 2)
     }
 }

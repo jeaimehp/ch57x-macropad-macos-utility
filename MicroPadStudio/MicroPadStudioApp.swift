@@ -66,6 +66,32 @@ struct MicroPadStudioApp: App {
             } else {
                 print("SELFTEST WARN: CLI binary not found, skipped validate")
             }
+            // M3: live-match normalization
+            let norm: [(String, String)] = [
+                ("ctrl-shift-w", "w"), ("{delay(100)}cmd-c", "c"), ("a,b,c", "a"),
+                ("click(left+right)", "click(left+right)"), ("volumeup", "volumeup"),
+                ("cmd-v", "v"), ("wheelup", "wheelup"),
+            ]
+            for (input, want) in norm {
+                let got = MappingStore.normalizeAction(input)
+                if got != want {
+                    print("SELFTEST FAIL normalize '\(input)' → '\(got)' (want '\(want)')")
+                    exit(2)
+                }
+            }
+            print("SELFTEST normalize ok (\(norm.count) cases)")
+            let clicks: [(String, UInt32?)] = [
+                ("click", 1), ("click(left)", 1), ("click(middle)", 2),
+                ("click(right)", 3), ("a", nil), ("wheelup", nil), ("click(both)", nil),
+            ]
+            for (a, want) in clicks {
+                let got = MappingStore.mouseButton(for: a)
+                if got != want {
+                    print("SELFTEST FAIL mouseButton '\(a)' → \(String(describing: got)) (want \(String(describing: want)))")
+                    exit(2)
+                }
+            }
+            print("SELFTEST mouseButton ok (\(clicks.count) cases)")
             print("SELFTEST PASS")
             exit(0)
         } catch {

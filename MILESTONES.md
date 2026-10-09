@@ -25,9 +25,10 @@ based on https://github.com/kriomant/ch57x-keyboard-tool
 - Visual 3×2 + knob layout; click a button/knob-slot to assign an action; layer tabs (3); action picker covering the full `doc/actions.md` vocabulary (keys, modifiers, sequences, mouse, media, timed); orientation setting; live YAML preview.
 - **Test**: build config entirely by clicking → validate → upload → physical pad matches. Commit.
 
-### M3 — Live test panel  `(1–2 days)`
+### M3 — Live test panel  `(1–2 days)` 🔶 code+autotests DONE; hw test blocked on USB recovery
 - IOHIDManager listener for 1189:8890; pad graphic highlights presses; knob shows CW/CCW rotation + press; event log with timestamps; start/stop toggle.
 - **Test**: press/turn every control on the real pad, verify each is detected and mapped to the right slot. Commit.
+- Implemented: `LiveEventMonitor` (keys page 0x07/0x04, consumer 0x0C, wheel 0x01/0x38+0x48, mouse buttons 0x02→knob press), slot highlighting via `normalizeAction` + `mouseButton(for:)` matching, `LiveTestPanelView` toggle + timestamped log. Needs Input Monitoring TCC permission at runtime (prompts). ⏳ hw test blocked: macOS USB stack wedged (see pickupandgo) — pad must be physically re-plugged first.
 
 ### M4 — Config library (save/manage)  `(1 day)`
 - Named configs stored under Application Support; create/duplicate/rename/delete; one-click apply (→ M1 upload path); active-config indicator.
