@@ -1,0 +1,39 @@
+# Configuration for 3x2 macro pad with 1 knob (USB 1189:8890)
+# See 'doc/actions.md' in the ch57x-keyboard-tool repo for all supported actions.
+
+model: ch57x-2
+
+# Normal orientation: buttons on the left, knobs on the right.
+orientation: normal
+
+# Counted with knobs on the right: 2 rows x 3 columns of buttons, 1 knob.
+# If button numbering comes out rotated, swap rows/columns or set orientation.
+rows: 2
+columns: 3
+knobs: 1
+
+# Three layers, switched with the side button (LED blinks to show layer).
+layers:
+  - buttons:
+      - ["a", "s", "d"]
+      - ["z", "x", "c"]
+    knobs:
+      - ccw: "wheelup"
+        press: "click"
+        cw: "wheeldown"
+
+  - buttons:
+      - ["1", "2", "3"]
+      - ["4", "5", "6"]
+    knobs:
+      - ccw: "volumedown"
+        press: "mute"
+        cw: "volumeup"
+
+  - buttons:
+      - ["play", "prev", "next"]
+      - ["enter", "escape", "space"]
+    knobs:
+      - ccw: "left"
+        press: "enter"
+        cw: "right"
