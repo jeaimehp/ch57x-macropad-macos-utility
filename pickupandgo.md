@@ -5,7 +5,26 @@
 
 ---
 
-## STATE 2026-10-09 (latest) — M1 COMPLETE ✅ (code+tests) → NEXT: real flash test (needs user consent), then M2
+## STATE 2026-10-09 (latest) — M2 COMPLETE ✅ → NEXT: M3 live-test panel
+
+M2 shipped: visual pad editor + action picker.
+- `Model/ActionsCatalog.swift` — action vocabulary from `show-keys` v1.7.0 + doc/actions.md
+  (5 tabs: Common/Keys/Media/Mouse/Advanced). Verified: `""` and `none` are NOT valid no-ops
+  upstream → picker offers no "clear"; user must pick a real action.
+- `Views/PadEditorView.swift` — segmented layer tabs (1..N), 2×3 grid, knob as 3 segments
+  (CW / Press / CCW); selected slot highlighted with accent border.
+- `Views/ActionInspectorView.swift` — category picker + filter field + adaptive button grid +
+  raw custom-action field (combos/sequences/mouse). `.id(selection)` resets filter per slot.
+- `MappingStore` — `Slot` enum (button(r,c)/knobCCW/Press/CW), `currentLayer`, `selection`,
+  `action(for:)`/`assign(_:to:)` (all writes flow through YAML re-emit → CLI validate).
+- Selftest extended: model edit round-trip + CLI validate of edited YAML → `SELFTEST PASS`.
+Verified: BUILD SUCCEEDED; selftest PASS; GUI launches stable (RSS ~107MB, no crash).
+Gotcha: Swift dictionary literals are unordered — never build display-order arrays from `[k:v]`.
+
+⏳ Carry-over: flash-the-pad hardware test still needs explicit user consent (M1 item,
+also gates final M6 E2E).
+
+## STATE 2026-10-09 — M1 COMPLETE ✅ (code+tests)
 
 M1 shipped: YAML model + Yams parser (typed errors), `MappingYAML` deterministic emitter,
 `Ch57xTool` (bundled binary in `Contents/Resources`, fallback `~/.local/bin`; validate/upload via stdin),

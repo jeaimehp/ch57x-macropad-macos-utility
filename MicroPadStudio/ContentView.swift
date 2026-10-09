@@ -29,12 +29,21 @@ struct ContentView: View {
             Divider()
 
             HStack(spacing: 0) {
-                // Editor zone (M2)
-                VStack(alignment: .leading, spacing: 8) {
+                // Visual pad editor (M2)
+                VStack(alignment: .leading, spacing: 4) {
                     Text("Editor").font(.headline)
-                    Text("Visual pad editor lands here in M2")
-                        .foregroundStyle(.secondary)
-                    Spacer()
+                    PadEditorView(store: store)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+
+                Divider()
+
+                // Action inspector (M2)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Action").font(.headline)
+                    ActionInspectorView(store: store)
+                        .id(store.selection.map { "\($0)" })  // reset filter/custom per selection
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding()
@@ -44,6 +53,15 @@ struct ContentView: View {
                 // Live YAML preview
                 VStack(alignment: .leading, spacing: 8) {
                     Text("mapping.yaml").font(.headline)
+                    Picker("Orientation", selection: Binding(
+                        get: { store.mapping.orientation },
+                        set: { store.mapping.orientation = $0 })) {
+                        ForEach(PadMapping.Orientation.allCases) { o in
+                            Text(o.rawValue.capitalized).tag(o)
+                        }
+                    }
+                    .labelsHidden()
+                    .fixedSize()
                     ScrollView {
                         Text(store.yamlText)
                             .font(.system(.caption, design: .monospaced))

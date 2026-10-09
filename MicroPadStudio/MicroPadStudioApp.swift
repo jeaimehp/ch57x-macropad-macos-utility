@@ -15,7 +15,7 @@ struct MicroPadStudioApp: App {
     var body: some Scene {
         WindowGroup("MicroPad Studio") {
             ContentView()
-                .frame(minWidth: 720, minHeight: 480)
+                .frame(minWidth: 980, minHeight: 540)
         }
     }
 
@@ -40,9 +40,28 @@ struct MicroPadStudioApp: App {
                 exit(1)
             }
             print("SELFTEST round-trip ok")
+            // M2: model-level edit (what the editor's assign() ultimately does)
+            var edited = parsed
+            if !edited.layers.isEmpty {
+                if !edited.layers[0].buttons.isEmpty,
+                   !edited.layers[0].buttons[0].isEmpty {
+                    edited.layers[0].buttons[0][0] = "cmd-shift-q"
+                }
+                if !edited.layers[0].knobs.isEmpty {
+                    edited.layers[0].knobs[0].press = "mute"
+                }
+            }
+            let editedYAML = MappingYAML.emit(edited)
+            let reEdited = try MappingYAML.parse(editedYAML)
+            guard reEdited == edited else {
+                print("SELFTEST FAIL: edit round-trip mismatch")
+                exit(1)
+            }
+            print("SELFTEST edit round-trip ok")
             // CLI validate of emitted YAML (binary presence gates this step)
             if Ch57xTool.binaryURL() != nil {
                 try Ch57xTool().validate(emitted)
+                try Ch57xTool().validate(editedYAML)
                 print("SELFTEST cli validate ok")
             } else {
                 print("SELFTEST WARN: CLI binary not found, skipped validate")

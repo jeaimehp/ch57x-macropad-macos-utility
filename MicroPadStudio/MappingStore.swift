@@ -8,6 +8,15 @@ final class MappingStore: ObservableObject {
     @Published var lastResult: String?
     @Published var isBusy = false
 
+    // MARK: Editor state (M2)
+    /// A selectable control on the pad.
+    enum Slot: Hashable {
+        case button(row: Int, col: Int)
+        case knobCCW, knobPress, knobCW
+    }
+    @Published var currentLayer = 0 { didSet { if currentLayer >= mapping.layers.count { currentLayer = 0 } } }
+    @Published var selection: Slot?
+
     let device = DeviceMonitor()
     private let tool = Ch57xTool()
     @Published private(set) var yamlText: String
@@ -31,6 +40,51 @@ final class MappingStore: ObservableObject {
         ])
 
     private func markDirty() { yamlText = MappingYAML.emit(mapping) }
+
+    // MARK: Slot access (M2)
+
+    /// Current action string bound to `slot` on the currently edited layer.
+    func action(for slot: Slot) -> String {
+        guard currentLayer < mapping.layers.count else { return "" }
+        let layer = mapping.layers[currentLayer]
+        switch slot {
+        case .button(let r, let c):
+            guard r < layer.buttons.count, c < layer.buttons[r].count else { return "" }
+            return layer.buttons[r][c]
+        case .knobCCW:  return layer.knobs.first?.ccw ?? ""
+        case .knobPress: return layer.knobs.first?.press ?? ""
+        case .knobCW:   return layer.knobs.first?.cw ?? ""
+        }
+    }
+
+    /// Write `action` into `slot` on the currently edited layer (triggers YAML re-emit).
+    func assign(_ action: String, to slot: Slot) {
+        guard currentLayer < mapping.layers.count else { return }
+        var layer = mapping.layers[currentLayer]
+        switch slot {
+        case .button(let r, let c):
+            guard r < layer.buttons.count, c < layer.buttons[r].count else { return }
+            layer.buttons[r][c] = action
+        case .knobCCW, .knobPress, .knobCW:
+            guard !layer.knobs.isEmpty else { return }
+            switch slot {
+            case .knobCCW:  layer.knobs[0].ccw = action
+            case .knobPress: layer.knobs[0].press = action
+            case .knobCW:   layer.knobs[0].cw = action
+            case .button: break
+            }
+        }
+        mapping.layers[currentLayer] = layer
+    }
+
+    func slotLabel(_ slot: Slot) -> String {
+        switch slot {
+        case .button(let r, let c): return "Button \(r + 1)·\(c + 1) (row \(r + 1), col \(c + 1))"
+        case .knobCCW: return "Knob — rotate counter-clockwise"
+        case .knobPress: return "Knob — press"
+        case .knobCW: return "Knob — rotate clockwise"
+        }
+    }
 
     func validate() {
         isBusy = true; defer { isBusy = false }
