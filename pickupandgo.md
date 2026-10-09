@@ -5,6 +5,34 @@
 
 ---
 
+## STATE 2026-10-09 (later) — M0 COMPLETE ✅ → NEXT: M1 (device plumbing)
+
+Plan approved by user ("approve"). M0 scaffold done:
+- `project.yml` (XcodeGen) → `MicroPadStudio.xcodeproj` (gitignored, always regenerate with `xcodegen generate`).
+- `MicroPadStudio/MicroPadStudioApp.swift` + `ContentView.swift`: 2-pane placeholder window,
+  prints `MICROPADSTUDIO_LAUNCHED pid=N` to stdout as headless launch proof.
+- Build: `xcodegen generate && xcodebuild -project MicroPadStudio.xcodeproj -scheme MicroPadStudio
+  -configuration Debug -derivedDataPath ./DerivedData build` → **BUILD SUCCEEDED**.
+- Launch test: app ran >4s with live run loop (PID verified), killed after. Window content not
+  screenshot-able headless (osascript lacks Accessibility) — user can visually confirm.
+
+### XcodeGen pitfalls (this box: xcodegen 2.46 + Xcode 27) — do not rediscover
+- Target `info:` block fails with opaque `Decoding failed at "path"` → **don't use it**;
+  use `GENERATE_INFOPLIST_FILE: YES` in settings instead.
+- `PRODUCT_NAME`/`PRODUCT_MODULE_NAME` come out EMPTY → `Module name "" is not a valid identifier`.
+  Must set `PRODUCT_NAME: "$(TARGET_NAME)"` explicitly in target settings.
+- Terminal harness rejects `cmd &` — background GUI apps via the background-process mechanism,
+  and `osascript` window queries need Accessibility (not granted; don't rely on them).
+
+### NEXT STEP: M1 — Core plumbing (from MILESTONES.md)
+Swift YAML mapping model (Codable), bundle `ch57x-keyboard-tool` binary as
+resources/build phase, device detection, validate + upload via `Process` (stdin!),
+error/progress UI. Test on the real pad (USB-cabled), then commit + update this file.
+Pad config ground truth: `mapping.yaml` in repo root (validated; never uploaded yet —
+flashing still requires user confirmation).
+
+---
+
 ## STATE 2026-10-09 — PLAN READY, WAITING FOR USER APPROVAL (no app code yet)
 
 ### What this project is

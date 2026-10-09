@@ -1,4 +1,4 @@
-# MicroPad Studio — Milestones (PENDING APPROVAL)
+# MicroPad Studio — Milestones (APPROVED 2026-10-09)
 
 macOS SwiftUI app to configure a 3×2 + 1 knob CH57x micropad (USB `1189:8890`),
 based on https://github.com/kriomant/ch57x-keyboard-tool
@@ -12,7 +12,7 @@ based on https://github.com/kriomant/ch57x-keyboard-tool
 
 ## Milestones
 
-### M0 — Scaffold & handoff docs  `(0.5 day)`
+### M0 — Scaffold & handoff docs  `(0.5 day)` ✅ DONE
 - Xcode project (SwiftUI, macOS 14+), repo layout, `.gitignore`, `pickupandgo.md`, this plan.
 - **Test**: app builds & launches empty window. Commit.
 
