@@ -112,7 +112,7 @@ struct ConfigLibrary {
 
     func delete(_ name: String) throws {
         let path = url(for: name)
-        guard FileManager.default.fileExists(atPath: path) else { throw LibraryError.notFound(name) }
+        guard FileManager.default.fileExists(atPath: path.path) else { throw LibraryError.notFound(name) }
         try FileManager.default.removeItem(at: path)
     }
 }

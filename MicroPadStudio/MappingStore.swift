@@ -135,6 +135,14 @@ final class MappingStore: ObservableObject {
         importConfig(text: text, name: url.deletingPathExtension().lastPathComponent)
     }
 
+    /// Export the current working mapping to a file (M5).
+    func exportConfig(to url: URL) {
+        do {
+            try MappingYAML.emit(mapping).write(to: url, atomically: true, encoding: .utf8)
+            lastResult = "📤 exported to '\(url.lastPathComponent)'"
+        } catch { lastResult = "❌ export failed: \(error.localizedDescription)" }
+    }
+
     // MARK: Live test wiring (M3)
 
     private func wireLiveMonitor() {

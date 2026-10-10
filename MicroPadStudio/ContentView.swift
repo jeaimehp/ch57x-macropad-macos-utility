@@ -1,4 +1,21 @@
 import SwiftUI
+import UniformTypeIdentifiers
+
+/// FileDocument shim so `.fileExporter` can save plain YAML text (M5).
+struct YAMLDocument: FileDocument {
+    static var readableContentTypes: [UTType] { [.yaml, .plainText] }
+    var text: String
+    init(text: String) { self.text = text }
+    init(configuration: ReadConfiguration) throws {
+        guard let data = configuration.file.regularFileContents else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+        text = String(decoding: data, as: UTF8.self)
+    }
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+        FileWrapper(regularFileWithContents: Data(text.utf8))
+    }
+}
 
 /// M1 shell: device status + validate/upload + YAML preview. Editor lands in M2.
 struct ContentView: View {
@@ -7,6 +24,7 @@ struct ContentView: View {
     @State private var showLibrary = false
     @State private var showImporter = false
     @State private var showExporter = false
+    @State private var exportDoc: YAMLDocument?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -30,6 +48,13 @@ struct ContentView: View {
                 }
                 Button("Re-scan") { store.device.refresh() }
                     .disabled(store.isBusy)
+                Button("Import…") { showImporter = true }
+                    .disabled(store.isBusy)
+                Button("Export…") {
+                    exportDoc = YAMLDocument(text: store.yamlText)
+                    showExporter = true
+                }
+                .disabled(store.isBusy)
                 Button("Validate") { store.validate() }
                     .disabled(store.isBusy)
                 Button("Upload to Pad…") { confirmUpload = true }
@@ -100,10 +125,35 @@ struct ContentView: View {
             "Upload will overwrite the mapping currently stored on the pad. This cannot be read back.",
             isPresented: $confirmUpload, titleVisibility: .visible
         ) {
-            Button("Upload", role: .destructive) { store.upload() }
-            Button("Cancel", role: .cancel) {}
-        }
-    }
+     Button("Upload", role: .destructive) { store.upload() }
+     Button("Cancel", role: .cancel) {}
+ }
+ .fileImporter(isPresented: $showImporter,
+               allowedContentTypes: [.yaml, .plainText],
+               allowsMultipleSelection: false) { result in
+     switch result {
+     case .success(let urls):
+         if let url = urls.first { store.importConfig(from: url) }
+     case .failure(let err):
+         store.lastResult = "❌ import failed: \(err.localizedDescription)"
+     }
+ }
+ .fileExporter(isPresented: $showExporter,
+               document: exportDoc,
+               contentTypes: [.yaml],
+               defaultFilename: store.activeConfigName ?? "mapping") { result in
+     if case .success(let url) = result { store.exportConfig(to: url) }
+     exportDoc = nil
+ }
+ .onDrop(of: [UTType.fileURL], isTargeted: nil) { providers in
+     guard let provider = providers.first else { return false }
+     _ = provider.loadObject(ofClass: URL.self) { url, _ in
+         guard let url, ["yaml", "yml"].contains(url.pathExtension.lowercased()) else { return }
+         DispatchQueue.main.async { store.importConfig(from: url) }
+     }
+     return true
+ }
+ }
 
     private func hex(_ v: UInt16?) -> String {
         guard let v else { return "??" }

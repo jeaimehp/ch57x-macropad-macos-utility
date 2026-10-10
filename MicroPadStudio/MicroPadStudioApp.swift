@@ -92,6 +92,33 @@ struct MicroPadStudioApp: App {
                 }
             }
             print("SELFTEST mouseButton ok (\(clicks.count) cases)")
+            // M4/M5: config library + import paths against a temp dir.
+            let libDir = FileManager.default.temporaryDirectory
+                .appendingPathComponent("mps-selftest-\(UUID().uuidString)")
+            let lib = ConfigLibrary(dir: libDir)
+            let saved1 = try lib.save(parsed, as: "My Config")
+            if saved1 != "My Config" { print("SELFTEST FAIL library save name \(saved1)"); exit(2) }
+            let saved2 = try lib.save(parsed, as: "My Config")   // collision
+            if saved2 != "My Config (2)" { print("SELFTEST FAIL library collision name \(saved2)"); exit(2) }
+            if lib.list().count != 2 { print("SELFTEST FAIL library list count"); exit(2) }
+            let reloaded = try lib.load(saved1)
+            if MappingYAML.emit(reloaded) != MappingYAML.emit(parsed) {
+                print("SELFTEST FAIL library load round-trip"); exit(2)
+            }
+            let dup = try lib.duplicate("My Config")
+            if !dup.contains("copy") || !lib.exists(dup) { print("SELFTEST FAIL library duplicate \(dup)"); exit(2) }
+            let renamed = try lib.rename(dup, to: "Renamed Config")
+            if lib.exists(dup) || !lib.exists(renamed) { print("SELFTEST FAIL library rename"); exit(2) }
+            try lib.delete(renamed)
+            if lib.exists(renamed) { print("SELFTEST FAIL library delete"); exit(2) }
+            do {
+                _ = try lib.importText("not: [valid: yaml: at: all", as: "bad")
+                print("SELFTEST FAIL library importText accepted invalid YAML"); exit(2)
+            } catch { /* expected */ }
+            let imp = try lib.importText(MappingYAML.emit(parsed), as: "imported/../evil")
+            if imp.contains("/") || !lib.exists(imp) { print("SELFTEST FAIL import sanitize \(imp)"); exit(2) }
+            try? FileManager.default.removeItem(at: libDir)
+            print("SELFTEST config library ok (save/collision/load/dup/rename/delete/import)")
             print("SELFTEST PASS")
             exit(0)
         } catch {
