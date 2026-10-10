@@ -4,6 +4,9 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var store = MappingStore()
     @State private var confirmUpload = false
+    @State private var showLibrary = false
+    @State private var showImporter = false
+    @State private var showExporter = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -17,6 +20,14 @@ struct ContentView: View {
                      : "Micropad not detected — plug it in via USB")
                     .font(.callout)
                 Spacer()
+                Button {
+                    showLibrary.toggle()
+                } label: {
+                    Label(store.activeConfigName ?? "Unsaved", systemImage: "square.stack")
+                }
+                .popover(isPresented: $showLibrary, arrowEdge: .bottom) {
+                    ConfigLibraryView(store: store)
+                }
                 Button("Re-scan") { store.device.refresh() }
                     .disabled(store.isBusy)
                 Button("Validate") { store.validate() }

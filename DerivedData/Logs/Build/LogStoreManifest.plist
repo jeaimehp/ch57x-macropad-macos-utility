@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>logFormatVersion</key>
+	<integer>13</integer>
+	<key>logs</key>
+	<dict>
+		<key>36C29E2C-4EC5-4E9D-A38A-6434DA48DE27</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>36C29E2C-4EC5-4E9D-A38A-6434DA48DE27.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>E</string>
+				<key>totalNumberOfAnalyzerIssues</key>
+				<integer>0</integer>
+				<key>totalNumberOfErrors</key>
+				<integer>1</integer>
+				<key>totalNumberOfTestFailures</key>
+				<integer>0</integer>
+				<key>totalNumberOfWarnings</key>
+				<integer>1</integer>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>MicroPadStudio project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>MicroPadStudio</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Building project MicroPadStudio with scheme MicroPadStudio and configuration Debug</string>
+			<key>timeStartedRecording</key>
+			<real>813279956.37718797</real>
+			<key>timeStoppedRecording</key>
+			<real>813279956.92354703</real>
+			<key>title</key>
+			<string>Building project MicroPadStudio with scheme MicroPadStudio and configuration Debug</string>
+			<key>uniqueIdentifier</key>
+			<string>36C29E2C-4EC5-4E9D-A38A-6434DA48DE27</string>
+		</dict>
+		<key>3BF00BA6-BD52-4800-9788-1049CE2CA64A</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>3BF00BA6-BD52-4800-9788-1049CE2CA64A.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>E</string>
+				<key>totalNumberOfAnalyzerIssues</key>
+				<integer>0</integer>
+				<key>totalNumberOfErrors</key>
+				<integer>1</integer>
+				<key>totalNumberOfTestFailures</key>
+				<integer>0</integer>
+				<key>totalNumberOfWarnings</key>
+				<integer>1</integer>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>MicroPadStudio project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>MicroPadStudio</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Building project MicroPadStudio with scheme MicroPadStudio and configuration Debug</string>
+			<key>timeStartedRecording</key>
+			<real>813279652.11183703</real>
+			<key>timeStoppedRecording</key>
+			<real>813279653.00768995</real>
+			<key>title</key>
+			<string>Building project MicroPadStudio with scheme MicroPadStudio and configuration Debug</string>
+			<key>uniqueIdentifier</key>
+			<string>3BF00BA6-BD52-4800-9788-1049CE2CA64A</string>
+		</dict>
+		<key>4C3F3B18-93C1-40D7-ABED-3E46F3AC2044</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>4C3F3B18-93C1-40D7-ABED-3E46F3AC2044.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>W</string>
+				<key>totalNumberOfAnalyzerIssues</key>
+				<integer>0</integer>
+				<key>totalNumberOfErrors</key>
+				<integer>0</integer>
+				<key>totalNumberOfTestFailures</key>
+				<integer>0</integer>
+				<key>totalNumberOfWarnings</key>
+				<integer>1</integer>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>MicroPadStudio project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>MicroPadStudio</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Building project MicroPadStudio with scheme MicroPadStudio and configuration Debug</string>
+			<key>timeStartedRecording</key>
+			<real>813279978.40688205</real>
+			<key>timeStoppedRecording</key>
+			<real>813279979.79686606</real>
+			<key>title</key>
+			<string>Building project MicroPadStudio with scheme MicroPadStudio and configuration Debug</string>
+			<key>uniqueIdentifier</key>
+			<string>4C3F3B18-93C1-40D7-ABED-3E46F3AC2044</string>
+		</dict>
+		<key>84410927-722D-49F4-8B5E-E18AC0403309</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>84410927-722D-49F4-8B5E-E18AC0403309.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>W</string>
+				<key>totalNumberOfAnalyzerIssues</key>
+				<integer>0</integer>
+				<key>totalNumberOfErrors</key>
+				<integer>0</integer>
+				<key>totalNumberOfTestFailures</key>
+				<integer>0</integer>
+				<key>totalNumberOfWarnings</key>
+				<integer>1</integer>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>MicroPadStudio project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>MicroPadStudio</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Building project MicroPadStudio with scheme MicroPadStudio and configuration Debug</string>
+			<key>timeStartedRecording</key>
+			<real>813280006.55722499</real>
+			<key>timeStoppedRecording</key>
+			<real>813280007.843081</real>
+			<key>title</key>
+			<string>Building project MicroPadStudio with scheme MicroPadStudio and configuration Debug</string>
+			<key>uniqueIdentifier</key>
+			<string>84410927-722D-49F4-8B5E-E18AC0403309</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

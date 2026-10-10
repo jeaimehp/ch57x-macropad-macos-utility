@@ -1,0 +1,29 @@
+{
+  "" : {
+    "diagnostics" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/MicroPadStudio-primary.dia",
+    "emit-module-dependencies" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/MicroPadStudio-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/MicroPadStudio-primary-emit-module.dia",
+    "pch" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/MicroPadStudio-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/MicroPadStudio-primary.swiftdeps"
+  },
+  "/Users/jeaimehp/ch57xx-micropad/MicroPadStudio/ContentView.swift" : {
+    "const-values" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/ContentView.d",
+    "diagnostics" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/ContentView.dia",
+    "index-unit-output-path" : "/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/ContentView.o",
+    "swift-dependencies" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/ContentView.swiftdeps",
+    "swiftmodule" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/ContentView~partial.swiftmodule"
+  },
+  "/Users/jeaimehp/ch57xx-micropad/MicroPadStudio/MicroPadStudioApp.swift" : {
+    "const-values" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/MicroPadStudioApp.swiftconstvalues",
+    "dependencies" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/MicroPadStudioApp.d",
+    "diagnostics" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/MicroPadStudioApp.dia",
+    "index-unit-output-path" : "/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/MicroPadStudioApp.o",
+    "llvm-bc" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/MicroPadStudioApp.bc",
+    "object" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/MicroPadStudioApp.o",
+    "swift-dependencies" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/MicroPadStudioApp.swiftdeps",
+    "swiftmodule" : "/Users/jeaimehp/ch57xx-micropad/DerivedData/Build/Intermediates.noindex/MicroPadStudio.build/Debug/MicroPadStudio.build/Objects-normal/arm64/MicroPadStudioApp~partial.swiftmodule"
+  }
+}

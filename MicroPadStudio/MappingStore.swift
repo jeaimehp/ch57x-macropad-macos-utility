@@ -30,12 +30,109 @@ final class MappingStore: ObservableObject {
     @Published private(set) var wheelDir: String?   // "cw" | "ccw"
     private var wheelClearGeneration = 0
 
+    // MARK: Config library (M4)
+    let library = ConfigLibrary()
+    @Published var activeConfigName: String?          // nil = unsaved working copy
+    @Published var libraryEntries: [ConfigLibrary.Entry] = []
+
     init() {
         // Default: the 3x2+1knob layout this project ships with (mapping.yaml @ a2e39b6).
         mapping = Self.defaultMapping
         yamlText = MappingYAML.emit(Self.defaultMapping)
         device.start()
         wireLiveMonitor()
+        refreshLibrary()
+    }
+
+    // MARK: Config library actions (M4)
+
+    func refreshLibrary() { libraryEntries = library.list() }
+
+    /// Save under a name (new entry; collision → " (2)"). Sets it active.
+    func saveConfigAs(_ name: String) {
+        do {
+            activeConfigName = try library.save(mapping, as: name)
+            refreshLibrary()
+            lastResult = "💾 saved as '\(activeConfigName!)'"
+        } catch { lastResult = "❌ save failed: \(error.localizedDescription)" }
+    }
+
+    /// Save over the active entry.
+    func saveConfig() {
+        guard let name = activeConfigName else { return }
+        do {
+            try library.overwrite(mapping, name: name)
+            refreshLibrary()
+            lastResult = "💾 saved '\(name)'"
+        } catch { lastResult = "❌ save failed: \(error.localizedDescription)" }
+    }
+
+    func applyConfig(_ name: String) {
+        do {
+            mapping = try library.load(name)
+            yamlText = MappingYAML.emit(mapping)
+            activeConfigName = name
+            currentLayer = 0; selection = nil
+            lastResult = "📂 loaded '\(name)'"
+        } catch { lastResult = "❌ load failed: \(error.localizedDescription)" }
+    }
+
+    func newConfig() {
+        mapping = Self.defaultMapping
+        yamlText = MappingYAML.emit(mapping)
+        activeConfigName = nil
+        currentLayer = 0; selection = nil
+        lastResult = "🆕 new config (not saved)"
+    }
+
+    func duplicateConfig(_ name: String) {
+        do {
+            _ = try library.duplicate(name)
+            refreshLibrary()
+            lastResult = "📑 duplicated '\(name)'"
+        } catch { lastResult = "❌ duplicate failed: \(error.localizedDescription)" }
+    }
+
+    func renameConfig(_ name: String, to newName: String) {
+        do {
+            let final = try library.rename(name, to: newName)
+            if activeConfigName == name { activeConfigName = final }
+            refreshLibrary()
+            lastResult = "✏️ renamed → '\(final)'"
+        } catch { lastResult = "❌ rename failed: \(error.localizedDescription)" }
+    }
+
+    func deleteConfig(_ name: String) {
+        do {
+            try library.delete(name)
+            if activeConfigName == name { activeConfigName = nil }
+            refreshLibrary()
+            lastResult = "🗑 deleted '\(name)'"
+        } catch { lastResult = "❌ delete failed: \(error.localizedDescription)" }
+    }
+
+    // MARK: Import / export (M5)
+
+    /// Import YAML text (file picker or drag&drop). Validates via the codec before applying;
+    /// also stores a copy in the library under the file's base name.
+    func importConfig(text: String, name rawName: String) {
+        do {
+            let m = try MappingYAML.parse(text)
+            mapping = m
+            yamlText = MappingYAML.emit(m)
+            activeConfigName = try library.save(m, as: rawName)
+            currentLayer = 0; selection = nil
+            refreshLibrary()
+            lastResult = "📥 imported '\(activeConfigName!)' from file (saved to library)"
+        } catch { lastResult = "❌ import failed: \(error.localizedDescription)" }
+    }
+
+    func importConfig(from url: URL) {
+        guard let text = try? String(contentsOf: url, encoding: .utf8) else {
+            lastResult = "❌ import failed: cannot read '\(url.lastPathComponent)' as text"
+            return
+        }
+        importConfig(text: text, name: url.deletingPathExtension().lastPathComponent)
     }
 
     // MARK: Live test wiring (M3)

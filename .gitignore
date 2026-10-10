@@ -1,16 +1,6 @@
-# Xcode
-*.xcodeproj/
-xcuserdata/
-DerivedData/
-build/
-*.xcbuild
-
-# SwiftPM (if added later)
-.swiftpm/
-Package.resolved
-
-# macOS
+.build/
+dist/
 .DS_Store
-
-# Temporary verification artifacts
-*.log
+*.xcodeproj
+Package.resolved
+.swiftpm/

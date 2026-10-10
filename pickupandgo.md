@@ -5,6 +5,32 @@
 
 ---
 
+## STATE 2026-10-09 (later) — M0 DONE ✅ (build/launch/window verified) — M1 underway
+
+**Plan approved by user ("approve — keep working until all milestones implemented").**
+
+### M0 results
+- SPM package (swift-tools 6.0, lang mode v5, macOS 14+): targets `MicroPadCore` (lib),
+  `MicroPadStudio` (exec), `MicroPadCoreTests`.
+- `Scripts/build_app.sh` → assembles `dist/MicroPadStudio.app` (Info.plist from
+  `Resources/`, copies `~/.local/bin/ch57x-keyboard-tool` into `Contents/Resources/`,
+  adhoc codesign). `--debug` flag available.
+- Verified: `swift build -c release` OK (Swift 6.4), `swift test` green, app launches
+  (PID confirmed), System Events reports window "MicroPad Studio".
+- **Test-harness note for later milestones:** `screencapture` FAILS (terminal lacks screen
+  recording permission). Verify GUI liveness via
+  `osascript -e 'tell application "System Events" to get name of every window of process "MicroPadStudio"'`
+  and `pgrep -lf MicroPadStudio`.
+
+### NEXT STEP
+**M1**: MicroPadCore — PadMapping model + YAML read/write (hand-rolled parser for the
+upstream format; no external deps) + CLI wrapper (Process running bundled
+`ch57x-keyboard-tool` via stdin) + device detection (ioreg vendor 4489). Unit tests:
+parse repo `mapping.yaml` round-trip; validate via real CLI. Final M1 acceptance: flash
+test on the real pad (user pre-approved; baseline config committed in a2e39b6).
+
+---
+
 ## STATE 2026-10-09 (latest) — M3 code DONE ✅ · 🔴 USB STACK WEDGED: user must re-plug the pad → NEXT: flash pad, M3 hw test, M4
 
 ### 🔴 BLOCKER (hardware, needs hands)
