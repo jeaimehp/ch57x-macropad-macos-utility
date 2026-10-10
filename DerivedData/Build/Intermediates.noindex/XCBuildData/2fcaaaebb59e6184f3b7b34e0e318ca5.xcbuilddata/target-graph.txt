@@ -1,2 +1,0 @@
-Target dependency graph (1 target)
-Target 'MicroPadStudio' in project 'MicroPadStudio' (no dependencies)
