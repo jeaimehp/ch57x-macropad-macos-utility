@@ -33,3 +33,14 @@ only backup** — commit after every successful upload.
 - Actions reference: [`doc/actions.md`](https://github.com/kriomant/ch57x-keyboard-tool/blob/master/doc/actions.md).
 - Rotated numbering? Fix `orientation:` rather than rearranging button arrays.
 - Rows/columns are counted with the knob(s) on the right.
+
+## MicroPadStudio.app (M0–M6)
+
+Native macOS GUI around `ch57x-keyboard-tool`: visual 3-layer pad editor,
+validate/upload, named config library, import/export + drag&drop YAML, live
+test panel (buttons/knob/mouse via IOHIDManager).
+
+- Build: `xcodegen generate && xcodebuild -project MicroPadStudio.xcodeproj -scheme MicroPadStudio -configuration Release -derivedDataPath ./DerivedData build`
+- Package: `dist/MicroPadStudio.app` + `dist/MicroPadStudio.zip` (adhoc-signed)
+- Headless tests: `MicroPadStudio.app/Contents/MacOS/MicroPadStudio --selftest mapping.yaml`
+- Requires `ch57x-keyboard-tool` on PATH (validates before upload).
