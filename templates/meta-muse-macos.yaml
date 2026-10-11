@@ -1,13 +1,13 @@
 # @title Meta Muse (macOS)
-# @summary Meta's Muse AI assistant on a Mac. Meta hasn't published Muse's keyboard shortcuts, so this uses standard macOS keys that work in any chat app; New chat and Stop are common conventions — UNVERIFIED for Muse.
+# @summary Meta's Muse AI assistant on a Mac — talk to it, hear replies, share screenshots. Dictate and Read Response use built-in macOS speech features (works in any app); New chat and Stop are common chat-app conventions, UNVERIFIED for Muse since Meta hasn't published its shortcuts.
 # @note b1-1 New chat | ⌘N starts a new conversation (common in chat apps — unverified for Muse).
-# @note b1-2 Screenshot → clipboard | ⌃⌘⇧4 lets you drag a screen area to the clipboard, ready to paste into Muse.
-# @note b1-3 Paste | ⌘V pastes text or a screenshot into the prompt.
-# @note b2-1 Copy | ⌘C copies the selected reply text.
+# @note b1-2 Dictate to Chat | Press Control twice to start macOS Dictation into Muse's chat box; speak, then press again (or Esc) to finish. One-time setup: System Settings → Keyboard → Dictation → On, Shortcut = "Press Control Key Twice".
+# @note b1-3 Read Response | Select Muse's reply, press to have your Mac read it aloud; press again to stop. One-time setup: System Settings → Accessibility → Spoken Content → "Speak selection" On (shortcut ⌥Esc).
+# @note b2-1 Screenshot → clipboard | ⌃⌘⇧4 lets you drag a screen area to the clipboard — then press the knob to paste it into Muse.
 # @note b2-2 Stop | Esc usually stops a reply in progress (unverified for Muse).
 # @note b2-3 Send | ⏎ sends your prompt.
 # @note knob-ccw Scroll up | Scrolls back through the conversation.
-# @note knob-press Switch app | ⌘Tab jumps back to the last app — handy while Muse works in another app.
+# @note knob-press Paste | ⌘V pastes text or a screenshot into the prompt.
 # @note knob-cw Scroll down | Scrolls forward through the conversation.
 #
 
@@ -19,9 +19,9 @@ knobs: 1
 
 layers:
   - buttons:
-      - ["cmd-n", "ctrl-cmd-shift-4", "cmd-v"]
-      - ["cmd-c", "escape", "enter"]
+      - ["cmd-n", "ctrl,ctrl", "alt-escape"]
+      - ["ctrl-cmd-shift-4", "escape", "enter"]
     knobs:
       - ccw: "wheelup"
-        press: "cmd-tab"
+        press: "cmd-v"
         cw: "wheeldown"
