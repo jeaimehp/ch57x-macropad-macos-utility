@@ -12,6 +12,7 @@ installed at `~/.local/bin/ch57x-keyboard-tool`).
 | `mapping.yaml` | Active key-mapping config (2×3 buttons + 1 knob, 1 layer — the pad has no layer-switch button) — currently flashed on the pad |
 | `MicroPadStudio/` | SwiftUI app source (Model / Services / Views) |
 | `project.yml` | XcodeGen spec (`xcodegen generate` → `.xcodeproj`, gitignored) |
+| `templates/` | Ready-made mappings (e.g. `total-annihilation.yaml`) — import in the app or `upload <` directly |
 | `vendor/` | Bundled `ch57x-keyboard-tool` v1.7.0 universal binary (MIT) |
 | `scripts/` | GUI-verification helpers (CG window list, displays, AX dump) |
 | `MILESTONES.md` / `pickupandgo.md` | Plan + handoff log |

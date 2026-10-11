@@ -1,0 +1,30 @@
+# Total Annihilation (1997, Windows) — 3x2 + 1 knob template
+# Uses TA's default hotkeys. The pad sends plain USB keystrokes, so a mapping
+# flashed from this Mac works unchanged when the pad is plugged into Windows.
+#
+#   ┌──────────────┬──────────────┬──────────────┐
+#   │ Ctrl+C       │ Ctrl+Z       │ S            │   knob CCW   = game slower (numpad -)
+#   │ commander    │ same type    │ stop         │   knob press = pause
+#   ├──────────────┼──────────────┼──────────────┤   knob CW    = game faster (numpad +)
+#   │ A            │ P            │ E            │
+#   │ attack       │ patrol       │ reclaim      │
+#   └──────────────┴──────────────┴──────────────┘
+#
+# Ctrl+C selects (and jumps to) your Commander; Ctrl+Z selects every unit of the
+# selected type. Game speed only changes in skirmish or when the host allows it.
+# Ctrl+D (self-destruct) is deliberately NOT mapped.
+
+model: ch57x-2
+orientation: normal
+rows: 2
+columns: 3
+knobs: 1
+
+layers:
+  - buttons:
+      - ["ctrl-c", "ctrl-z", "s"]
+      - ["a", "p", "e"]
+    knobs:
+      - ccw: "numpadminus"
+        press: "<72>"   # HID usage 72 = Pause
+        cw: "numpadplus"
