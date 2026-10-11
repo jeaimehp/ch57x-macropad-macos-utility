@@ -3,6 +3,23 @@
 > Purpose: any AI model can resume this project from this file alone.
 > Newest entry at the top. Keep updated after every meaningful step.
 
+## STATE 2026-10-10 (signing) — 🔏 STABLE SIGNING IDENTITY — dist signed; TCC re-grant pending once
+
+- `scripts/setup_signing.sh` (run once, idempotent): self-signed codeSigning cert
+  "MicroPad Studio Local Signing" (SHA-1 `D6521C31C4BEAF9F7451244447ACA77F0DA770AE`, 10 y) in dedicated
+  keychain `~/Library/Keychains/micropad-signing.keychain-db` (added to user search list; no
+  auto-lock; partition list set so codesign never prompts). Password: `~/.config/micropad-studio/signing-keychain-password`.
+  `find-identity` shows it as CSSMERR_TP_NOT_TRUSTED — expected and fine for codesign/TCC.
+- `scripts/package_dist.sh` [`SKIP_BUILD=1`]: build Release → ditto to dist → sign bundled CLI then
+  app with the identity → verify → zip. Designated requirement:
+  `identifier "com.micropadstudio.app" and certificate leaf = H"d6521c31…"` — build-independent.
+- **Never re-sign dist ad-hoc** (would drop the TCC grant again).
+
+### NEXT
+1. User: remove old MicroPadStudio from Input Monitoring, add `dist/MicroPadStudio.app` once.
+2. Verify grant survives a full `scripts/package_dist.sh` rebuild (Live Test → "monitor started").
+3. Button/knob press test with Live Test.
+
 ## STATE 2026-10-10 (late night) — ✅ PAD REFLASHED: SINGLE LAYER (no layer-switch button exists)
 
 **Hardware fact (user-confirmed): this pad has NO side/layer button** → layers 2+ are unreachable.

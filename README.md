@@ -46,7 +46,12 @@ validate/upload, named config library, import/export + drag&drop YAML, live
 test panel (buttons/knob/mouse via IOHIDManager).
 
 - Build: `xcodegen generate && xcodebuild -project MicroPadStudio.xcodeproj -scheme MicroPadStudio -configuration Release -derivedDataPath ./DerivedData build`
-- Package: `dist/MicroPadStudio.app` + `dist/MicroPadStudio.zip` (adhoc-signed)
+- Package: `scripts/package_dist.sh` → `dist/MicroPadStudio.app` + `dist/MicroPadStudio.zip`,
+  signed with the stable local identity "MicroPad Studio Local Signing" (one-time setup:
+  `scripts/setup_signing.sh` — self-signed cert in its own keychain
+  `~/Library/Keychains/micropad-signing.keychain-db`, password in
+  `~/.config/micropad-studio/`). Stable signature ⇒ Input Monitoring grant survives rebuilds.
+  Not Apple-issued: other Macs still see an unidentified developer.
 - Headless tests: `MicroPadStudio.app/Contents/MacOS/MicroPadStudio --selftest mapping.yaml`
 - Self-contained: the app bundles `ch57x-keyboard-tool` (from `vendor/`) in
   `Contents/Resources` and falls back to `~/.local/bin/ch57x-keyboard-tool`.
@@ -55,4 +60,4 @@ test panel (buttons/knob/mouse via IOHIDManager).
 - Yams is pinned to an exact version in `project.yml` (the generated
   `Package.resolved` is gitignored).
 
-- Input Monitoring (Live Test) is granted per binary for ad-hoc builds: re-grant it after every rebuild.
+- Always package via `scripts/package_dist.sh`: an ad-hoc re-sign would change the signature and drop the Input Monitoring grant.
