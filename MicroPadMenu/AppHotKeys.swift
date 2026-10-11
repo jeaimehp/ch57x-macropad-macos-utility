@@ -66,8 +66,8 @@ final class AppHotKeys {
     }
 
     /// "+dictate": once `url`'s app is frontmost (waits through a cold launch, max 8 s),
-    /// press Control twice — the macOS Dictation shortcut "Press Control Key Twice".
-    /// Posting key events needs Accessibility; prompts the first time.
+    /// start macOS Dictation — via the app's Edit → Start Dictation… menu item, else the
+    /// "Press Control Key Twice" shortcut. Both need Accessibility; prompts the first time.
     private func startDictation(in url: URL) {
         let opts = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
         guard AXIsProcessTrustedWithOptions(opts) else {
@@ -81,8 +81,38 @@ final class AppHotKeys {
                 try? await Task.sleep(nanoseconds: 50_000_000)
             }
             try? await Task.sleep(nanoseconds: 300_000_000)   // let its window take key focus
-            Self.doubleTapControl()
+            let pid = NSWorkspace.shared.frontmostApplication?.processIdentifier ?? 0
+            // Prefer the app's own Edit → Start Dictation… (works whatever the Dictation
+            // shortcut is set to); fall back to the "Press Control Key Twice" shortcut.
+            if !Self.pressStartDictationMenuItem(pid: pid) { Self.doubleTapControl() }
         }
+    }
+
+    /// Finds "Start Dictation…" in the app's menu bar via Accessibility and presses it.
+    static func pressStartDictationMenuItem(pid: pid_t) -> Bool {
+        guard pid > 0 else { return false }
+        let app = AXUIElementCreateApplication(pid)
+        func children(_ e: AXUIElement) -> [AXUIElement] {
+            var v: CFTypeRef?
+            guard AXUIElementCopyAttributeValue(e, kAXChildrenAttribute as CFString, &v) == .success else { return [] }
+            return v as? [AXUIElement] ?? []
+        }
+        func title(_ e: AXUIElement) -> String {
+            var v: CFTypeRef?
+            AXUIElementCopyAttributeValue(e, kAXTitleAttribute as CFString, &v)
+            return v as? String ?? ""
+        }
+        var bar: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(app, kAXMenuBarAttribute as CFString, &bar) == .success,
+              let menuBar = bar else { return false }
+        for top in children(menuBar as! AXUIElement) {          // Apple, App, Edit, …
+            for menu in children(top) {
+                for item in children(menu) where title(item).hasPrefix("Start Dictation") {
+                    return AXUIElementPerformAction(item, kAXPressAction as CFString) == .success
+                }
+            }
+        }
+        return false
     }
 
     static func doubleTapControl() {
