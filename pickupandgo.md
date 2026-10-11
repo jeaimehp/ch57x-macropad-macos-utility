@@ -15,10 +15,16 @@
   `identifier "com.micropadstudio.app" and certificate leaf = H"d6521c31…"` — build-independent.
 - **Never re-sign dist ad-hoc** (would drop the TCC grant again).
 
+✅ **VERIFIED:** user re-granted Input Monitoring once; then two rebuilds with different CDHashes
+(7ad4cba8… → 82aadbb9… [build 999] → 2969e958… [v1.0 build 1]) all got "monitor started (pad connected)"
+with no re-grant — the grant survives rebuilds.
+- `project.yml` now sets `MARKETING_VERSION 1.0` / `CURRENT_PROJECT_VERSION 1` (Info.plist previously
+  had NO CFBundleVersion). Bump these for releases.
+- Commit hygiene: stage files explicitly — `git add -A` swept an untracked helper
+  (`scripts/ax_clicktest.sh`, AX click test from an earlier session) into `c93eaf3`.
+
 ### NEXT
-1. User: remove old MicroPadStudio from Input Monitoring, add `dist/MicroPadStudio.app` once.
-2. Verify grant survives a full `scripts/package_dist.sh` rebuild (Live Test → "monitor started").
-3. Button/knob press test with Live Test.
+1. Button/knob press test with Live Test (human at the pad).
 
 ## STATE 2026-10-10 (late night) — ✅ PAD REFLASHED: SINGLE LAYER (no layer-switch button exists)
 
