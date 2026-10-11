@@ -9,7 +9,7 @@ installed at `~/.local/bin/ch57x-keyboard-tool`).
 
 | File | Purpose |
 |---|---|
-| `mapping.yaml` | Active key-mapping config (2×3 buttons + 1 knob, 3 layers) — currently flashed on the pad |
+| `mapping.yaml` | Active key-mapping config (2×3 buttons + 1 knob, 1 layer — the pad has no layer-switch button) — currently flashed on the pad |
 | `MicroPadStudio/` | SwiftUI app source (Model / Services / Views) |
 | `project.yml` | XcodeGen spec (`xcodegen generate` → `.xcodeproj`, gitignored) |
 | `vendor/` | Bundled `ch57x-keyboard-tool` v1.7.0 universal binary (MIT) |
@@ -41,7 +41,7 @@ only backup** — commit after every successful upload.
 
 ## MicroPadStudio.app (M0–M6)
 
-Native macOS GUI around `ch57x-keyboard-tool`: visual 3-layer pad editor,
+Native macOS GUI around `ch57x-keyboard-tool`: visual pad editor (layer tabs appear only for multi-layer configs),
 validate/upload, named config library, import/export + drag&drop YAML, live
 test panel (buttons/knob/mouse via IOHIDManager).
 
@@ -54,3 +54,5 @@ test panel (buttons/knob/mouse via IOHIDManager).
 - Layout regression test: `MicroPadStudio.app/Contents/MacOS/MicroPadStudio --layout-test [--select-key]`
 - Yams is pinned to an exact version in `project.yml` (the generated
   `Package.resolved` is gitignored).
+
+- Input Monitoring (Live Test) is granted per binary for ad-hoc builds: re-grant it after every rebuild.

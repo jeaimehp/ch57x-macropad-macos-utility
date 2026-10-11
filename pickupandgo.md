@@ -3,6 +3,22 @@
 > Purpose: any AI model can resume this project from this file alone.
 > Newest entry at the top. Keep updated after every meaningful step.
 
+## STATE 2026-10-10 (late night) — ✅ PAD REFLASHED: SINGLE LAYER (no layer-switch button exists)
+
+**Hardware fact (user-confirmed): this pad has NO side/layer button** → layers 2+ are unreachable.
+- `mapping.yaml` → 1 layer: buttons `a s d` / `z x c`, knob ccw `left` / press `enter` / cw `right`
+  (user's choice). Committed `be6a7c1`, then flashed via CLI: exit 0 in 75 s. Pad == `mapping.yaml`.
+- App: layer picker hidden when `layers.count == 1`; `defaultMapping` is single-layer.
+- dist rebuilt (`ditto` copy of Release build → `codesign --force --deep -s -` → `ditto -c -k` zip).
+
+**TCC gotcha:** Input Monitoring for an ad-hoc app is bound to that exact binary (cdhash). Every
+rebuild of `dist/MicroPadStudio.app` loses the grant → user must remove + re-add (or toggle) it in
+System Settings → Privacy & Security → Input Monitoring. Verified: old dist got "monitor started",
+new dist reports no permission. A stable signing identity would fix this permanently.
+
+### REMAINING (human-only)
+1. Re-grant Input Monitoring for the rebuilt dist app, toggle Live Test, press 6 buttons + knob.
+
 ## STATE 2026-10-10 (night) — ✅ APP E2E VERIFIED ON REAL PAD (upload via GUI) — only human-only checks remain
 
 Docs fixed: MILESTONES statuses current, README (bundled CLI, not PATH; repo layout; layout-test),
@@ -43,8 +59,8 @@ Note: macOS has no `timeout` binary — wrap CLI calls with `python3 subprocess.
 ### REMAINING
 1. User eyes-on GUI: `dist/MicroPadStudio.app` (19:59 build, layout-test clean both states) —
    click keys at min window size: grid must stay visible; Validate/Upload show ⏳ without freezing.
-2. Hardware feel: press the 6 buttons / knob on layer 1 (a s d / z x c + wheel) to confirm
-   the mapping took. Layer switch via side button.
+2. Hardware feel: press the 6 buttons / knob (see newest entry for current mapping).
+   ~~Layer switch via side button~~ — pad has no layer button.
 3. App Live Test panel: toggle it, grant Input Monitoring (adhoc app is targeted by path; if
    no events, System Settings → Privacy → Input Monitoring). Highlights must match presses.
 
