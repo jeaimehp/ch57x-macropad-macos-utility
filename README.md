@@ -206,3 +206,14 @@ Shared state lives in `~/Library/Application Support/MicroPadStudio/` (`configs/
 ch57x-keyboard-tool validate < templates/zoom-macos.yaml   # config goes via stdin
 ch57x-keyboard-tool upload   < templates/zoom-macos.yaml   # USB cable required; overwrites the pad
 ```
+
+## Credits
+
+MicroPad Studio and MicroPad Menu are front-ends for
+**[ch57x-keyboard-tool](https://github.com/kriomant/ch57x-keyboard-tool)** by kriomant
+(<https://github.com/kriomant/ch57x-keyboard-tool>). It does the real work of talking to the pad:
+validating configs and uploading them over USB. Version 1.7.0 is bundled unmodified in
+`vendor/ch57x-keyboard-tool` under its MIT license (see `vendor/NOTICE.txt`), and the YAML config
+format, key names and action syntax are the tool's own — see its
+[README](https://github.com/kriomant/ch57x-keyboard-tool#readme) and
+[actions reference](https://github.com/kriomant/ch57x-keyboard-tool/blob/master/doc/actions.md).
