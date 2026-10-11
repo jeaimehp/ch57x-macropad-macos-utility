@@ -17,7 +17,9 @@ Two apps:
 ![The 3×2 + knob CH57x macro pad this project was built for, next to a ruler](docs/macropad-photo.jpg)
 
 This is the pad the apps were built and tested on — a generic "6-key + 1-knob" mini macro
-keyboard, often sold without a brand name:
+keyboard, often sold without a brand name. A similar one on Amazon:
+[Mechanical Programmable Keyboard, 6 keys + knob (B09Z3WFPFR)](https://www.amazon.com/dp/B09Z3WFPFR)
+— listings change, so check it has 6 keys in a 3×2 grid, one knob, and USB ID `1189:8890`.
 
 - **6 keys in a 3×2 grid** with standard **MX-style** switches and keycaps, plus **one rotary knob**
   (turn left, press, turn right) on the right.
