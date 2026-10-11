@@ -161,6 +161,7 @@ Key names come from `ch57x-keyboard-tool show-keys` (`escape`, not `esc`); actio
 | `scripts/` | Packaging, signing, Finder shortcut setup, GUI-test helpers |
 | `project.yml` | XcodeGen spec (the `.xcodeproj` is generated and gitignored) |
 | `pickupandgo.md` / `MILESTONES.md` | Handoff log + original plan |
+| `LICENSE` | MIT (project) + note on the bundled tool's MIT license |
 
 ## Building
 
@@ -225,3 +226,8 @@ validating configs and uploading them over USB. Version 1.7.0 is bundled unmodif
 format, key names and action syntax are the tool's own — see its
 [README](https://github.com/kriomant/ch57x-keyboard-tool#readme) and
 [actions reference](https://github.com/kriomant/ch57x-keyboard-tool/blob/master/doc/actions.md).
+
+## License
+
+[MIT](LICENSE) © 2026 jeaimehp. The bundled `vendor/ch57x-keyboard-tool` is © kriomant and
+distributed under its own MIT License ([ch57x-keyboard-tool](https://github.com/kriomant/ch57x-keyboard-tool)).
