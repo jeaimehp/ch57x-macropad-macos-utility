@@ -16,29 +16,29 @@ based on https://github.com/kriomant/ch57x-keyboard-tool
 - Xcode project (SwiftUI, macOS 14+), repo layout, `.gitignore`, `pickupandgo.md`, this plan.
 - **Test**: app builds & launches empty window. Commit.
 
-### M1 — Core plumbing: model + device + flash  `(1–2 days)` ✅ DONE (final flash test awaits user consent)
+### M1 — Core plumbing: model + device + flash  `(1–2 days)` ✅ DONE
 - Swift model of the mapping YAML (layers/buttons/knob, `model`, `rows`, `columns`, `knobs`, `orientation`).
 - Bundle `ch57x-keyboard-tool` binary; device detection (USB 1189:8890 present?); `validate`; `upload` with progress/error UI.
-- **Test**: ✅ selftest harness (parse→emit→round-trip→CLI validate PASS), ✅ self-contained bundle (PASS under empty $HOME), ✅ IOKit detect vs real pad (`DETECTED 1189:8890`), ✅ GUI launch stable. ⏳ real pad flash via app — awaiting user go-ahead (destructive).
+- **Test**: ✅ selftest harness (parse→emit→round-trip→CLI validate PASS), ✅ self-contained bundle (PASS under empty $HOME), ✅ IOKit detect vs real pad (`DETECTED 1189:8890`), ✅ GUI launch stable. ✅ first real-pad flash of `mapping.yaml` succeeded 2026-10-10 (via CLI). ⏳ flash through the app's Upload button still to be verified on hardware.
 
-### M2 — Pad editor GUI  `(2–3 days)`
+### M2 — Pad editor GUI  `(2–3 days)` ✅ DONE (physical-match check pending hw test)
 - Visual 3×2 + knob layout; click a button/knob-slot to assign an action; layer tabs (3); action picker covering the full `doc/actions.md` vocabulary (keys, modifiers, sequences, mouse, media, timed); orientation setting; live YAML preview.
 - **Test**: build config entirely by clicking → validate → upload → physical pad matches. Commit.
 
-### M3 — Live test panel  `(1–2 days)` 🔶 code+autotests DONE; hw test blocked on USB recovery
+### M3 — Live test panel  `(1–2 days)` 🔶 code+autotests DONE; hw test pending (USB stack recovered, pad flashed 2026-10-10)
 - IOHIDManager listener for 1189:8890; pad graphic highlights presses; knob shows CW/CCW rotation + press; event log with timestamps; start/stop toggle.
 - **Test**: press/turn every control on the real pad, verify each is detected and mapped to the right slot. Commit.
-- Implemented: `LiveEventMonitor` (keys page 0x07/0x04, consumer 0x0C, wheel 0x01/0x38+0x48, mouse buttons 0x02→knob press), slot highlighting via `normalizeAction` + `mouseButton(for:)` matching, `LiveTestPanelView` toggle + timestamped log. Needs Input Monitoring TCC permission at runtime (prompts). ⏳ hw test blocked: macOS USB stack wedged (see pickupandgo) — pad must be physically re-plugged first.
+- Implemented: `LiveEventMonitor` (keys page 0x07/0x04, consumer 0x0C, wheel 0x01/0x38+0x48, mouse buttons 0x02→knob press), slot highlighting via `normalizeAction` + `mouseButton(for:)` matching, `LiveTestPanelView` toggle + timestamped log. Needs Input Monitoring TCC permission at runtime (prompts). ⏳ hw test: press every control with Live Test on and confirm highlights (needs a human at the pad).
 
-### M4 — Config library (save/manage)  `(1 day)`
+### M4 — Config library (save/manage)  `(1 day)` ✅ DONE (selftest covers library ops)
 - Named configs stored under Application Support; create/duplicate/rename/delete; one-click apply (→ M1 upload path); active-config indicator.
 - **Test**: create 3 configs, switch between them, flash each. Commit.
 
-### M5 — Import / export  `(0.5–1 day)`
+### M5 — Import / export  `(0.5–1 day)` ✅ DONE
 - Export current/selected config to `.yaml`; import from file with schema validation and clear error reporting; drag & drop onto window.
 - **Test**: export → wipe → re-import round-trip byte-identical; importing the upstream `example-mapping.yaml` works. Commit.
 
-### M6 — Packaging & polish  `(1 day)`
+### M6 — Packaging & polish  `(1 day)` ✅ DONE (adhoc-signed arm64 `dist/`; final hw E2E pending)
 - Standalone .app bundle (versioned, icon, bundle id), codesign (adhoc at minimum), README with usage, final E2E pass.
 - **Test**: run the built .app from a clean launch (no Xcode), full flow: detect → edit → test → save → export → upload. Commit.
 

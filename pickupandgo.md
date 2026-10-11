@@ -1,5 +1,37 @@
 # pickupandgo.md — Handoff Log
 
+> Purpose: any AI model can resume this project from this file alone.
+> Newest entry at the top. Keep updated after every meaningful step.
+
+## STATE 2026-10-10 (night) — ✅ APP E2E VERIFIED ON REAL PAD (upload via GUI) — only human-only checks remain
+
+Docs fixed: MILESTONES statuses current, README (bundled CLI, not PATH; repo layout; layout-test),
+stale SPM M0 entry marked superseded, this file's header moved to top. **Yams pinned
+`exactVersion: 6.2.2`** in `project.yml` (Package.resolved is gitignored).
+
+Verified on a clean Release build (pinned Yams):
+- `--selftest mapping.yaml` PASS (also under empty `$HOME` → bundle self-contained);
+  `--layout-test` and `--layout-test --select-key` both PASS.
+- Real GUI driven by synthetic CGEvent clicks (terminal HAS Accessibility now: `AXIsProcessTrusted()==true`;
+  `screencapture -R` works while display awake): device dot green "Micropad connected (8890)";
+  selecting key 1-2 keeps the grid fully visible (compact Category menu); Validate → "✅ Config is valid.";
+  **Upload → confirm dialog → ⏳ (UI responsive, buttons disabled) → "✅ Uploaded to pad."**
+  Pad content unchanged (same committed `mapping.yaml`).
+- Live Test toggle → shows "grant Input Monitoring" guidance (TCC not granted; user action).
+
+Learned:
+- **Launch the GUI with `open -n <app>`** for window checks. Exec'ing the binary directly from a
+  subprocess creates no main window (only menu-bar strips) — not an app bug.
+- Upload took **~60–65 s**: libusb `darwin_init → darwin_get_cached_device` blocks (proc state `U`)
+  while enumerating the bus, then proceeds. 90 s timeout is just enough; consider raising to ~150 s
+  if a slow-enumeration upload ever times out. `system_profiler SPUSBDataType` returns 0 lines on this
+  box even when healthy — not a wedge indicator by itself.
+- Helper click/window tools used: CGEvent mouse post + PID-filtered `CGWindowListCopyWindowInfo`.
+
+### REMAINING (human-only)
+1. Grant Input Monitoring to MicroPadStudio, toggle Live Test, press 6 buttons + knob → highlights match.
+2. Physical feel check of layer 1 (a s d / z x c + wheel) and layer switch.
+
 ## STATE 2026-10-10 (evening) — ✅ FIRST FLASH SUCCEEDED — pad now runs repo mapping.yaml
 
 `ch57x-keyboard-tool upload < mapping.yaml` → **exit 0**, post-flash HID probe fast/responsive
@@ -63,12 +95,14 @@ passes `--selftest` and both `--layout-test` states.
 
 
 
-> Purpose: any AI model can resume this project from this file alone.
-> Newest entry at the top. Keep updated after every meaningful step.
 
 ---
 
 ## STATE 2026-10-09 (later) — M0 DONE ✅ (build/launch/window verified) — M1 underway
+
+> ⚠️ SUPERSEDED: this entry describes the parallel SPM scaffold (`MicroPadCore`,
+> `Scripts/build_app.sh`) that was **removed** in `8392340`. The live layout is the
+> XcodeGen one (`project.yml` → `MicroPadStudio/`). Kept for history only.
 
 **Plan approved by user ("approve — keep working until all milestones implemented").**
 

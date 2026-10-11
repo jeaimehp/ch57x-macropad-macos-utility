@@ -9,7 +9,12 @@ installed at `~/.local/bin/ch57x-keyboard-tool`).
 
 | File | Purpose |
 |---|---|
-| `mapping.yaml` | Active key-mapping config (2×3 buttons + 1 knob, 3 layers) |
+| `mapping.yaml` | Active key-mapping config (2×3 buttons + 1 knob, 3 layers) — currently flashed on the pad |
+| `MicroPadStudio/` | SwiftUI app source (Model / Services / Views) |
+| `project.yml` | XcodeGen spec (`xcodegen generate` → `.xcodeproj`, gitignored) |
+| `vendor/` | Bundled `ch57x-keyboard-tool` v1.7.0 universal binary (MIT) |
+| `scripts/` | GUI-verification helpers (CG window list, displays, AX dump) |
+| `MILESTONES.md` / `pickupandgo.md` | Plan + handoff log |
 
 ## Workflow
 
@@ -43,4 +48,9 @@ test panel (buttons/knob/mouse via IOHIDManager).
 - Build: `xcodegen generate && xcodebuild -project MicroPadStudio.xcodeproj -scheme MicroPadStudio -configuration Release -derivedDataPath ./DerivedData build`
 - Package: `dist/MicroPadStudio.app` + `dist/MicroPadStudio.zip` (adhoc-signed)
 - Headless tests: `MicroPadStudio.app/Contents/MacOS/MicroPadStudio --selftest mapping.yaml`
-- Requires `ch57x-keyboard-tool` on PATH (validates before upload).
+- Self-contained: the app bundles `ch57x-keyboard-tool` (from `vendor/`) in
+  `Contents/Resources` and falls back to `~/.local/bin/ch57x-keyboard-tool`.
+  PATH is not searched.
+- Layout regression test: `MicroPadStudio.app/Contents/MacOS/MicroPadStudio --layout-test [--select-key]`
+- Yams is pinned to an exact version in `project.yml` (the generated
+  `Package.resolved` is gitignored).
