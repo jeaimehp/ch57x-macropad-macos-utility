@@ -12,6 +12,24 @@ Two apps:
 | **MicroPad Studio** | Edit what each key and the knob do, browse templates, save/import/export configs, flash the pad, live-test key presses, print labels. |
 | **MicroPad Menu** | Menu bar helper: flash any template or saved config in two clicks, and power the *Open app* / *Dictate* keys. |
 
+## The hardware
+
+![The 3×2 + knob CH57x macro pad this project was built for, next to a ruler](docs/macropad-photo.jpg)
+
+This is the pad the apps were built and tested on — a generic "6-key + 1-knob" mini macro
+keyboard, often sold without a brand name:
+
+- **6 keys in a 3×2 grid** with standard **MX-style** switches and keycaps, plus **one rotary knob**
+  (turn left, press, turn right) on the right.
+- Black acrylic case, about **106 × 61 mm**, USB-C cable.
+- No layer button (so one layer only).
+- Shows up on USB as vendor/product **`1189:8890`** — check with
+  `ioreg -p IOUSB -l -w0 | grep -A2 '"idVendor" = 4489'` (4489 = 0x1189).
+
+Other CH57x pads that ch57x-keyboard-tool supports (`1189:8840`, `1189:8842`, different key
+counts) may work for flashing, but the editor, guide and printable labels assume this 3×2 + 1
+layout.
+
 ## Installation
 
 ### Requirements
@@ -280,6 +298,7 @@ Key names come from `ch57x-keyboard-tool show-keys` (`escape`, not `esc`); actio
 | `mapping.yaml` | Original single-layer test mapping (`a s d` / `z x c`, knob ← / enter / →) |
 | `design/` | App icon source + `make_icon.py` |
 | `docs/screenshots/` | README screenshots (see *Screenshots* under Building) |
+| `docs/macropad-photo.jpg` | Photo of the supported pad (metadata stripped) |
 | `vendor/` | Bundled `ch57x-keyboard-tool` v1.7.0 universal binary (MIT) |
 | `scripts/` | Packaging, signing, Finder shortcut setup, GUI-test helpers |
 | `project.yml` | XcodeGen spec (the `.xcodeproj` is generated and gitignored) |
