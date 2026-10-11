@@ -1,0 +1,27 @@
+# @title Meta Muse (macOS)
+# @summary Meta's Muse AI assistant on a Mac. Meta hasn't published Muse's keyboard shortcuts, so this uses standard macOS keys that work in any chat app; New chat and Stop are common conventions — UNVERIFIED for Muse.
+# @note b1-1 New chat | ⌘N starts a new conversation (common in chat apps — unverified for Muse).
+# @note b1-2 Screenshot → clipboard | ⌃⌘⇧4 lets you drag a screen area to the clipboard, ready to paste into Muse.
+# @note b1-3 Paste | ⌘V pastes text or a screenshot into the prompt.
+# @note b2-1 Copy | ⌘C copies the selected reply text.
+# @note b2-2 Stop | Esc usually stops a reply in progress (unverified for Muse).
+# @note b2-3 Send | ⏎ sends your prompt.
+# @note knob-ccw Scroll up | Scrolls back through the conversation.
+# @note knob-press Switch app | ⌘Tab jumps back to the last app — handy while Muse works in another app.
+# @note knob-cw Scroll down | Scrolls forward through the conversation.
+#
+
+model: ch57x-2
+orientation: normal
+rows: 2
+columns: 3
+knobs: 1
+
+layers:
+  - buttons:
+      - ["cmd-n", "ctrl-cmd-shift-4", "cmd-v"]
+      - ["cmd-c", "escape", "enter"]
+    knobs:
+      - ccw: "wheelup"
+        press: "cmd-tab"
+        cw: "wheeldown"

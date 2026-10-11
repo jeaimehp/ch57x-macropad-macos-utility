@@ -1,0 +1,27 @@
+# @title GIMP (macOS)
+# @summary GIMP 2.10 / 3 image editing — tool shortcuts, undo/redo and brush size on the knob. Uses GIMP's default shortcuts (⌘ replaces Ctrl on macOS).
+# @note b1-1 Paintbrush | P selects the Paintbrush tool.
+# @note b1-2 Eraser | ⇧E selects the Eraser tool.
+# @note b1-3 Move | M selects the Move tool.
+# @note b2-1 Rectangle select | R selects the Rectangle Select tool.
+# @note b2-2 Undo | ⌘Z undoes the last step.
+# @note b2-3 Redo | ⌘Y redoes the last undone step.
+# @note knob-ccw Smaller brush | [ decreases the brush size.
+# @note knob-press Swap colours | X swaps the foreground and background colours.
+# @note knob-cw Bigger brush | ] increases the brush size.
+#
+
+model: ch57x-2
+orientation: normal
+rows: 2
+columns: 3
+knobs: 1
+
+layers:
+  - buttons:
+      - ["p", "shift-e", "m"]
+      - ["r", "cmd-z", "cmd-y"]
+    knobs:
+      - ccw: "leftbracket"
+        press: "x"
+        cw: "rightbracket"

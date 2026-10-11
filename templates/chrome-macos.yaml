@@ -1,0 +1,27 @@
+# @title Google Chrome (macOS)
+# @summary Chrome browsing — tabs, navigation and search. Knob flips between tabs; press closes one (Reopen tab brings it back).
+# @note b1-1 New tab | ⌘T opens a new tab.
+# @note b1-2 Reopen closed tab | ⌘⇧T reopens the last closed tab — undo for an accidental close.
+# @note b1-3 Address bar | ⌘L jumps to the address bar to type a URL or search.
+# @note b2-1 Back | ⌘[ goes back a page.
+# @note b2-2 Reload | ⌘R reloads the page.
+# @note b2-3 Find in page | ⌘F searches the current page.
+# @note knob-ccw Previous tab | ⌘⌥← switches to the tab on the left.
+# @note knob-press Close tab | ⌘W closes the current tab.
+# @note knob-cw Next tab | ⌘⌥→ switches to the tab on the right.
+#
+
+model: ch57x-2
+orientation: normal
+rows: 2
+columns: 3
+knobs: 1
+
+layers:
+  - buttons:
+      - ["cmd-t", "cmd-shift-t", "cmd-l"]
+      - ["cmd-leftbracket", "cmd-r", "cmd-f"]
+    knobs:
+      - ccw: "cmd-alt-left"
+        press: "cmd-w"
+        cw: "cmd-alt-right"

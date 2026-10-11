@@ -1,0 +1,27 @@
+# @title Evernote (macOS)
+# @summary Evernote notes — create, search and format. Formatting keys are standard macOS rich-text shortcuts; Search and Sync follow Evernote's classic defaults and may differ in newer versions.
+# @note b1-1 New note | ⌘N creates a new note.
+# @note b1-2 Search notes | ⌘⌥F searches all notes (classic Evernote default — verify in your version).
+# @note b1-3 Insert link | ⌘K adds a link to the selected text.
+# @note b2-1 Bold | ⌘B bolds the selected text.
+# @note b2-2 Italic | ⌘I italicises the selected text.
+# @note b2-3 Underline | ⌘U underlines the selected text.
+# @note knob-ccw Back | ⌘[ goes back to the previous note.
+# @note knob-press Sync | ⌘S syncs now (classic default — newer versions sync automatically).
+# @note knob-cw Forward | ⌘] goes forward again.
+#
+
+model: ch57x-2
+orientation: normal
+rows: 2
+columns: 3
+knobs: 1
+
+layers:
+  - buttons:
+      - ["cmd-n", "cmd-alt-f", "cmd-k"]
+      - ["cmd-b", "cmd-i", "cmd-u"]
+    knobs:
+      - ccw: "cmd-leftbracket"
+        press: "cmd-s"
+        cw: "cmd-rightbracket"

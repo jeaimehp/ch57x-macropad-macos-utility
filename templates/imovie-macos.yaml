@@ -1,0 +1,27 @@
+# @title iMovie (macOS)
+# @summary iMovie editing — playback, cutting and transitions, with the knob stepping frame by frame.
+# @note b1-1 Play / pause | Space plays or pauses the timeline.
+# @note b1-2 Split clip | ⌘B splits the clip at the playhead.
+# @note b1-3 Cross dissolve | ⌘T adds a cross-dissolve transition at the playhead.
+# @note b2-1 Undo | ⌘Z undoes the last edit.
+# @note b2-2 Delete | Delete removes the selected clip.
+# @note b2-3 Import media | ⌘I opens the media import window.
+# @note knob-ccw Frame back | ← steps the playhead back one frame.
+# @note knob-press Full-screen preview | ⌘⇧F plays the movie full screen (Esc exits).
+# @note knob-cw Frame forward | → steps the playhead forward one frame.
+#
+
+model: ch57x-2
+orientation: normal
+rows: 2
+columns: 3
+knobs: 1
+
+layers:
+  - buttons:
+      - ["space", "cmd-b", "cmd-t"]
+      - ["cmd-z", "backspace", "cmd-i"]
+    knobs:
+      - ccw: "left"
+        press: "cmd-shift-f"
+        cw: "right"

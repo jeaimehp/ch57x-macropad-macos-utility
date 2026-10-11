@@ -1,0 +1,27 @@
+# @title Claude Code (macOS)
+# @summary Claude Code in the terminal — interrupt, permission modes, rewind and prompt history. Default keybindings; check /help if your version differs (rebind in ~/.claude/keybindings.json).
+# @note b1-1 Interrupt | Esc stops Claude mid-response or mid-tool-call.
+# @note b1-2 Permission mode | ⇧Tab cycles permission modes (e.g. accept edits, plan mode).
+# @note b1-3 Rewind | Esc Esc opens rewind to edit an earlier prompt or restore a checkpoint.
+# @note b2-1 Transcript | Ctrl+O toggles the detailed transcript view.
+# @note b2-2 Background | Ctrl+B sends a running command to the background.
+# @note b2-3 Slash commands | Types / to open the slash-command menu.
+# @note knob-ccw Previous prompt | ↑ recalls earlier prompts from history.
+# @note knob-press Submit | ⏎ sends the prompt.
+# @note knob-cw Next prompt | ↓ moves forward through prompt history.
+#
+
+model: ch57x-2
+orientation: normal
+rows: 2
+columns: 3
+knobs: 1
+
+layers:
+  - buttons:
+      - ["escape", "shift-tab", "escape,escape"]
+      - ["ctrl-o", "ctrl-b", "slash"]
+    knobs:
+      - ccw: "up"
+        press: "enter"
+        cw: "down"

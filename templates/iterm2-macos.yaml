@@ -1,0 +1,27 @@
+# @title iTerm2 (macOS)
+# @summary iTerm2 terminal — tabs and split panes. Uses iTerm2's default keybindings.
+# @note b1-1 New tab | ⌘T opens a new tab in the current window.
+# @note b1-2 Split vertically | ⌘D splits the current pane side-by-side.
+# @note b1-3 Split horizontally | ⌘⇧D splits the current pane top/bottom.
+# @note b2-1 Clear buffer | ⌘K clears the scrollback of the current session.
+# @note b2-2 Find | ⌘F searches the scrollback.
+# @note b2-3 Paste history | ⌘⇧H shows recently pasted text to paste again.
+# @note knob-ccw Previous tab | ⌘⇧[ switches to the tab on the left.
+# @note knob-press Next pane | ⌘] moves focus to the next split pane.
+# @note knob-cw Next tab | ⌘⇧] switches to the tab on the right.
+#
+
+model: ch57x-2
+orientation: normal
+rows: 2
+columns: 3
+knobs: 1
+
+layers:
+  - buttons:
+      - ["cmd-t", "cmd-d", "cmd-shift-d"]
+      - ["cmd-k", "cmd-f", "cmd-shift-h"]
+    knobs:
+      - ccw: "cmd-shift-leftbracket"
+        press: "cmd-rightbracket"
+        cw: "cmd-shift-rightbracket"

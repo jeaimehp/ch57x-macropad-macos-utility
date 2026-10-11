@@ -1,0 +1,27 @@
+# @title Notion (macOS)
+# @summary Notion desktop app — find pages, create, format blocks and navigate history. Uses Notion's default shortcuts.
+# @note b1-1 Search | ⌘P opens Quick Find to jump to any page.
+# @note b1-2 New page | ⌘N creates a new page.
+# @note b1-3 Toggle sidebar | ⌘\ shows or hides the sidebar.
+# @note b2-1 To-do | ⌘⌥4 turns the current block into a to-do checkbox.
+# @note b2-2 Heading 1 | ⌘⌥1 turns the current block into a large heading.
+# @note b2-3 Comment | ⌘⇧M adds a comment on the selected text.
+# @note knob-ccw Back | ⌘[ goes back to the previous page.
+# @note knob-press Copy page link | ⌘L copies a link to the current page.
+# @note knob-cw Forward | ⌘] goes forward again.
+#
+
+model: ch57x-2
+orientation: normal
+rows: 2
+columns: 3
+knobs: 1
+
+layers:
+  - buttons:
+      - ["cmd-p", "cmd-n", "cmd-backslash"]
+      - ["cmd-alt-4", "cmd-alt-1", "cmd-shift-m"]
+    knobs:
+      - ccw: "cmd-leftbracket"
+        press: "cmd-l"
+        cw: "cmd-rightbracket"

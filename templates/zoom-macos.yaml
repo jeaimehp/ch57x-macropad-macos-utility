@@ -1,0 +1,27 @@
+# @title Zoom (macOS)
+# @summary Zoom meetings — mute, video, share and chat on dedicated keys, knob for volume. Uses Zoom's default shortcuts (the Zoom window must be focused unless you enable global shortcuts in Zoom settings).
+# @note b1-1 Mute / unmute | ⌘⇧A toggles your microphone.
+# @note b1-2 Video on / off | ⌘⇧V toggles your camera.
+# @note b1-3 Share screen | ⌘⇧S starts or stops screen sharing.
+# @note b2-1 Chat | ⌘⇧H shows or hides the meeting chat.
+# @note b2-2 Raise hand | ⌥Y raises or lowers your hand.
+# @note b2-3 Leave meeting | ⌘W prompts to leave (or end) the meeting.
+# @note knob-ccw Volume down | Lowers the Mac's output volume.
+# @note knob-press Speaker / gallery | ⌘⇧W switches between speaker and gallery view.
+# @note knob-cw Volume up | Raises the Mac's output volume.
+#
+
+model: ch57x-2
+orientation: normal
+rows: 2
+columns: 3
+knobs: 1
+
+layers:
+  - buttons:
+      - ["cmd-shift-a", "cmd-shift-v", "cmd-shift-s"]
+      - ["cmd-shift-h", "alt-y", "cmd-w"]
+    knobs:
+      - ccw: "volumedown"
+        press: "cmd-shift-w"
+        cw: "volumeup"
