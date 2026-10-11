@@ -80,6 +80,12 @@ struct ContentView: View {
                     .keyboardShortcut(.defaultAction)
             }
             .padding(12)
+            .background(
+                LinearGradient(colors: [Color(red: 0.13, green: 0.40, blue: 0.98).opacity(0.22),
+                                        Color(red: 0.42, green: 0.27, blue: 0.95).opacity(0.18),
+                                        Color(red: 0.74, green: 0.24, blue: 0.86).opacity(0.22)],
+                               startPoint: .leading, endPoint: .trailing)
+            )
             Divider()
 
             HStack(spacing: 0) {
@@ -87,7 +93,8 @@ struct ContentView: View {
                 // + paddings must never be compressed — layoutPriority keeps the pad
                 // on-screen when the inspector/yaml columns compete for width.
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Editor").font(.headline)
+                    Label("Editor", systemImage: "square.grid.3x2.fill").font(.headline)
+                        .foregroundStyle(Self.accent)
                     PadEditorView(store: store)
                 }
                 .frame(minWidth: 500, maxWidth: .infinity, alignment: .leading)
@@ -98,7 +105,8 @@ struct ContentView: View {
 
                 // Action inspector (M2)
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Action").font(.headline)
+                    Label("Action", systemImage: "wand.and.stars").font(.headline)
+                        .foregroundStyle(Color(red: 0.55, green: 0.33, blue: 0.98))
                     ActionInspectorView(store: store)
                         .id(store.selection.map { "\($0)" })  // reset filter/custom per selection
                 }
@@ -110,7 +118,8 @@ struct ContentView: View {
 
                 // Live YAML preview
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("mapping.yaml").font(.headline)
+                    Label("mapping.yaml", systemImage: "doc.text").font(.headline)
+                        .foregroundStyle(Color(red: 0.93, green: 0.28, blue: 0.80))
                     Picker("Orientation", selection: Binding(
                         get: { store.mapping.orientation },
                         set: { store.mapping.orientation = $0 })) {
@@ -144,7 +153,8 @@ struct ContentView: View {
             .padding(8)
             .frame(minHeight: 36)
         }
-        .sheet(isPresented: $showTemplates) { TemplateGuideView(store: store) }
+        .tint(Self.accent)
+        .sheet(isPresented: $showTemplates) { TemplateGuideView(store: store).tint(Self.accent) }
         .confirmationDialog(
             "Upload will overwrite the mapping currently stored on the pad. This cannot be read back.",
             isPresented: $confirmUpload, titleVisibility: .visible
@@ -179,6 +189,9 @@ struct ContentView: View {
 }
 .onExitCommand { store.selection = nil }   // Esc closes the inspector / restores plain pad view
 }
+
+    /// App accent: the icon's blue-violet.
+    static let accent = Color(red: 0.36, green: 0.36, blue: 1.0)
 
     private func hex(_ v: UInt16?) -> String {
         guard let v else { return "??" }

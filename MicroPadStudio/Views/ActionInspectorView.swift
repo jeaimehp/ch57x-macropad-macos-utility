@@ -73,6 +73,7 @@ struct ActionInspectorView: View {
                                 store.assign(item.action, to: slot)
                             }
                             .buttonStyle(.bordered)
+                            .tint(slotColor(slot))
                             .help(item.action)
                         }
                     }
@@ -101,6 +102,14 @@ struct ActionInspectorView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+    }
+
+    /// Same colour as the selected keycap in the editor (knob = glow blue).
+    private func slotColor(_ slot: MappingStore.Slot) -> Color {
+        if case .button(let r, let c) = slot {
+            return PadDiagramView.palette[(r * store.mapping.columns + c) % PadDiagramView.palette.count]
+        }
+        return FaceplateSheetView.knobGlow
     }
 
     private func applyCustom() {

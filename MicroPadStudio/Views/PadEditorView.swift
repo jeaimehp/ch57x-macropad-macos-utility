@@ -17,7 +17,8 @@ struct PadEditorView: View {
                 .disabled(store.isBusy)
             }
 
-            HStack(alignment: .center, spacing: 22) {
+            // Pad body: dark rounded plate like the Templates guide diagram.
+            HStack(alignment: .center, spacing: 16) {
                 // 3 columns × 2 rows (knob counted on the right, per project convention)
                 Grid(horizontalSpacing: 10, verticalSpacing: 10) {
                     ForEach(0..<store.mapping.rows, id: \.self) { r in
@@ -31,7 +32,14 @@ struct PadEditorView: View {
 
                 knobView
             }
-            .padding(.vertical, 6)
+            .padding(12)
+            .background(
+                RoundedRectangle(cornerRadius: 18)
+                    .fill(LinearGradient(colors: [Color(white: 0.22), Color(white: 0.11)],
+                                         startPoint: .top, endPoint: .bottom))
+                    .shadow(color: .black.opacity(0.3), radius: 6, y: 3)
+            )
+            .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(Color.white.opacity(0.08)))
 
             LiveTestPanelView(store: store)
 
@@ -39,11 +47,17 @@ struct PadEditorView: View {
         }
     }
 
+    /// Keycap colour for a grid position — same rainbow as the icon, guide and printed labels.
+    private func keyColor(row: Int, col: Int) -> Color {
+        PadDiagramView.palette[(row * store.mapping.columns + col) % PadDiagramView.palette.count]
+    }
+
     @ViewBuilder
     private func padButton(row: Int, col: Int) -> some View {
         let slot = MappingStore.Slot.button(row: row, col: col)
         let selected = store.selection == slot
         let pressed = store.isSlotPressed(slot)
+        let color = keyColor(row: row, col: col)
         Button {
             // Re-clicking the selected key deselects (escape hatch back to the plain pad view).
             store.selection = (store.selection == slot) ? nil : slot
@@ -51,33 +65,36 @@ struct PadEditorView: View {
             VStack(spacing: 3) {
                 if let label = store.note(for: slot)?.label, !label.isEmpty {
                     Text(label)
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundStyle(Color.accentColor)
+                        .font(.system(size: 10, weight: .bold))
                         .lineLimit(1).minimumScaleFactor(0.7)
                 } else {
                     Text("\(row + 1)·\(col + 1)")
-                        .font(.system(size: 9))
-                        .foregroundStyle(.tertiary)
+                        .font(.system(size: 9, weight: .semibold))
+                        .opacity(0.7)
                 }
                 Text(store.action(for: slot))
-                    .font(.system(.body, design: .monospaced))
+                    .font(.system(.body, design: .monospaced).weight(.medium))
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
                     .minimumScaleFactor(0.6)
             }
-            .frame(width: 96, height: 72)
+            .foregroundStyle(.white)
+            .shadow(color: .black.opacity(0.35), radius: 0.5)
+            .frame(width: 92, height: 70)
             .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(pressed ? Color.orange.opacity(0.55)
-                                  : selected ? Color.accentColor.opacity(0.25)
-                                  : Color(nsColor: .controlBackgroundColor))
+                RoundedRectangle(cornerRadius: 11)
+                    .fill(LinearGradient(colors: [color.opacity(pressed ? 1 : 0.95),
+                                                  color.opacity(pressed ? 0.9 : 0.62)],
+                                         startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .shadow(color: color.opacity(pressed ? 0.95 : 0.5), radius: pressed ? 12 : 5)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .strokeBorder(pressed ? .orange
-                                  : selected ? Color.accentColor : Color.secondary.opacity(0.35),
-                                  lineWidth: (pressed || selected) ? 2 : 1)
+                RoundedRectangle(cornerRadius: 11)
+                    .strokeBorder(Color.white.opacity(selected || pressed ? 0.95 : 0.12),
+                                  lineWidth: selected || pressed ? 2.5 : 1)
             )
+            .scaleEffect(pressed ? 0.95 : 1)
+            .animation(.easeOut(duration: 0.12), value: pressed)
         }
         .buttonStyle(.plain)
         .help(store.note(for: slot).map { "\($0.label)\($0.detail.isEmpty ? "" : " — \($0.detail)")" }
@@ -97,33 +114,34 @@ struct PadEditorView: View {
     private func knobSegment(_ slot: MappingStore.Slot, label: String, symbol: String) -> some View {
         let selected = store.selection == slot
         let pressed = store.isSlotPressed(slot)
+        let glow = FaceplateSheetView.knobGlow
         Button {
             store.selection = (store.selection == slot) ? nil : slot
         } label: {
             HStack(spacing: 6) {
-                Image(systemName: symbol).font(.system(size: 10))
+                Image(systemName: symbol).font(.system(size: 10, weight: .bold)).foregroundStyle(glow)
                 Text(store.note(for: slot)?.label.nilIfEmpty ?? label)
-                    .font(.system(size: 9)).foregroundStyle(.secondary)
+                    .font(.system(size: 9, weight: .semibold)).foregroundStyle(.white.opacity(0.75))
                     .lineLimit(1).minimumScaleFactor(0.7)
                 Spacer(minLength: 2)
                 Text(store.action(for: slot))
-                    .font(.system(.caption, design: .monospaced))
+                    .font(.system(.caption, design: .monospaced).weight(.medium))
+                    .foregroundStyle(.white)
                     .lineLimit(1).minimumScaleFactor(0.6)
             }
             .padding(.horizontal, 8)
-            .frame(width: 150, height: 34)
+            .frame(width: 142, height: 34)
             .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(pressed ? Color.orange.opacity(0.55)
-                                  : selected ? Color.accentColor.opacity(0.25)
-                                  : Color(nsColor: .controlBackgroundColor))
+                RoundedRectangle(cornerRadius: 9)
+                    .fill(pressed ? glow.opacity(0.55) : Color(white: 0.08))
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .strokeBorder(pressed ? .orange
-                                  : selected ? Color.accentColor : Color.secondary.opacity(0.35),
-                                  lineWidth: (pressed || selected) ? 2 : 1)
+                RoundedRectangle(cornerRadius: 9)
+                    .strokeBorder(selected || pressed ? Color.white : glow.opacity(0.7),
+                                  lineWidth: selected || pressed ? 2.5 : 1.2)
+                    .shadow(color: glow.opacity(0.8), radius: 4)
             )
+            .animation(.easeOut(duration: 0.12), value: pressed)
         }
         .buttonStyle(.plain)
     }
