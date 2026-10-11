@@ -27,15 +27,27 @@ struct ContentView: View {
     @State private var showExporter = false
     @State private var exportDoc: YAMLDocument?
 
-    init() {
+    /// `store` is injectable for headless rendering (--screenshots).
+    init(store: MappingStore? = nil) {
         // Test hook (--layout-test --select-key): open the app with a key already
         // selected so the headless layout test can measure the inspector-open state.
-        _store = StateObject(wrappedValue: {
+        // Demo launch options (README screenshots, no clicking needed):
+        //   --load-template <id>  start with a built-in template in the editor
+        //   --open-guide <id>     start with the Templates guide open on <id>
+        let args = CommandLine.arguments
+        func arg(_ flag: String) -> String? {
+            args.firstIndex(of: flag).flatMap { $0 + 1 < args.count ? args[$0 + 1] : nil }
+        }
+        _store = StateObject(wrappedValue: store ?? {
             let s = MappingStore()
-            if CommandLine.arguments.contains("--select-key") { s.selection = .button(row: 0, col: 0) }
+            if let id = arg("--load-template"), let t = s.templates.first(where: { $0.id == id }) { s.loadTemplate(t) }
+            if args.contains("--select-key") { s.selection = .button(row: 0, col: 0) }
             return s
         }())
+        guideInitial = arg("--open-guide")
+        _showTemplates = State(initialValue: guideInitial != nil)
     }
+    private let guideInitial: String?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -154,7 +166,9 @@ struct ContentView: View {
             .frame(minHeight: 36)
         }
         .tint(Self.accent)
-        .sheet(isPresented: $showTemplates) { TemplateGuideView(store: store).tint(Self.accent) }
+        .sheet(isPresented: $showTemplates) {
+            TemplateGuideView(store: store, initial: guideInitial.map { .template($0) }).tint(Self.accent)
+        }
         .confirmationDialog(
             "Upload will overwrite the mapping currently stored on the pad. This cannot be read back.",
             isPresented: $confirmUpload, titleVisibility: .visible

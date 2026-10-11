@@ -14,7 +14,15 @@ struct TemplateGuideView: View {
         case editor
     }
 
-    @State private var selection: Source? = .editor
+    @State private var selection: Source?
+    private let pinnedSelection: Bool
+
+    /// `initial` pins the selected item (headless screenshots); nil = first template on appear.
+    init(store: MappingStore, initial: Source? = nil) {
+        self.store = store
+        _selection = State(initialValue: initial ?? .editor)
+        pinnedSelection = initial != nil
+    }
     @State private var layer = 0
 
     var body: some View {
@@ -32,7 +40,7 @@ struct TemplateGuideView: View {
         .frame(width: 900, height: 620)
         .onAppear {
             store.refreshLibrary()
-            if let first = store.templates.first { selection = .template(first.id) }
+            if !pinnedSelection, let first = store.templates.first { selection = .template(first.id) }
         }
         .onChange(of: selection) { _ in layer = 0 }
     }

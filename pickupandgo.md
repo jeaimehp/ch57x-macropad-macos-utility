@@ -1,7 +1,63 @@
 # pickupandgo.md — Handoff Log
 
 > Purpose: any AI model can resume this project from this file alone.
-> Newest entry at the top. Keep updated after every meaningful step.
+> **Read "CURRENT STATE" first** — it is the consolidated truth. The dated entries under
+> "History" (newest first) explain how we got here. Update both after every meaningful step.
+
+## CURRENT STATE — 2026-10-11
+
+### What exists
+- **MicroPad Studio.app** (target `MicroPadStudio`) — SwiftUI editor for a 3×2 + 1-knob CH57x pad
+  (USB `1189:8890`): colourful pad editor + action inspector (Function/Explanation notes), Templates guide
+  (pad picture + numbered explanations), config library, import/export/drag-drop, Validate/Upload, Live Test,
+  Print Labels (PDF: keycap stickers/knob legend/desk card, or faceplate overlay/tape-on strips).
+- **MicroPad Menu.app** (target `MicroPadMenu`, LSUIElement) — menu bar: flash any template/saved config,
+  ✓ what's on the pad, app keys F13–F20 (`AppHotKeys`: open/focus app, tap-to-toggle dictate), Launch at Login,
+  `--flash <template>` CLI, `--selftest`.
+- **13 templates** in `templates/` (bundled into both apps): Finder & System, Meta Muse, Claude Code, VS Code,
+  Git (Terminal, oh-my-zsh aliases), iTerm2, Chrome, Notion, Evernote, iMovie, GIMP, Zoom (all macOS),
+  Total Annihilation (Windows).
+- Docs: `README.md` (features + screenshots in `docs/screenshots/`), this file, `MILESTONES.md` (original plan).
+
+### What's on the pad right now
+- **Finder & System (macOS)** — flashed by the user from the apps at 2026-10-11 03:26Z
+  (`~/Library/Application Support/MicroPadStudio/pad-state.json`). Top-left = Dictate (F14, dictates into the
+  current app via MicroPad Menu). No read-back exists; pad-state.json is the only record.
+
+### Hardware facts (verified)
+- One layer only (no layer button). Standard MX keycaps (flat top ≈12.7 mm), key pitch ≈21 mm, knob ≈20 mm at the
+  right edge, plate ≈106×61 mm (measured from a ruler photo → `PadGeometry`, `LabelSheetView.keycapMM` = 12).
+- Firmware limits the CLI `validate` does NOT check — enforced by `MappingLint` in Validate/Upload/selftest:
+  **≤5 accords per sequence**, **no `{delay(...)}`** (upload fails mid-way → half-flashed pad).
+- Pad sends a key's down+up together on release → no hold-to-talk; Dictate = tap start / tap stop (user approved).
+- Uploads take 60–75 s (libusb bus scan); timeout 120 s; cross-process flock on `upload.lock`.
+
+### User-facing setup state
+- Signing: self-signed "MicroPad Studio Local Signing" identity (`scripts/setup_signing.sh`, keychain
+  `micropad-signing.keychain-db`) → TCC grants survive rebuilds. **Always package with `scripts/package_dist.sh`.**
+- Granted by user: Input Monitoring (Studio, Live Test); Accessibility (MicroPad Menu, dictate).
+- Finder template's Focus (⌃⌥⌘F) / Terminal Here (⌃⌥⌘T) need `bash scripts/setup_finder_shortcuts.sh` or manual
+  binding — NOT run by us (classifier blocked chmod; it changes system prefs → user's call).
+- Dictation: Muse/Finder dictate press the app's Edit → "Start Dictation…" via AX (Control×2 fallback), stop with Esc.
+
+### Build / test / verify
+- `scripts/package_dist.sh` (both apps → `dist/` + zip). Selftests: `MicroPadStudio --selftest mapping.yaml`,
+  `--layout-test [--select-key|--guide]`; menu: `MICROPAD_SUPPORT_DIR=<tmp> MICROPAD_TOOL_PATH=<fake tool>
+  "MicroPad Menu" --selftest` (fake tool = shell script that reads stdin and exits 0).
+- README screenshots: `open -n dist/MicroPadStudio.app --args --load-template zoom-macos [--select-key]` or
+  `--open-guide <id>`, then `screencapture -x -l<windowID>` (window id via CGWindowList for that pid).
+- **GUI-automation rule:** never click fixed screen coordinates — the user works on this Mac at the same time
+  (stray clicks once landed in their browser/chat). Prefer launch options, AX actions, and window-id captures;
+  if clicking is unavoidable, re-read the window position and verify frontmost before every click.
+
+### Open items / ideas
+- Templates' shortcuts are app defaults from memory, not verified in each app (Muse "Stop" = Esc is a guess).
+- Finder "Screenshot Window" (`cmd-shift-4,space` without delay) may need a manual Space if the UI is slow.
+- Real hardware test of every template not done; Live Test highlight check never confirmed by the user.
+
+---
+
+## History (newest first)
 
 ## STATE 2026-10-10 (night) — ⌨️ APP-LAUNCH KEYS (F13–F20) via MicroPad Menu
 
