@@ -1,0 +1,38 @@
+# @title VS Code (macOS)
+# @summary Visual Studio Code on a Mac — command palette, navigation and editing shortcuts, with the knob flipping between editor tabs. Uses VS Code's default macOS keybindings.
+# @note b1-1 Command Palette | ⌘⇧P opens the Command Palette — run any VS Code command by name.
+# @note b1-2 Quick Open | ⌘P jumps to any file in the workspace by typing part of its name.
+# @note b1-3 Toggle Terminal | Ctrl+` shows or hides the integrated terminal panel.
+# @note b2-1 Toggle Comment | ⌘/ comments or uncomments the current line or selection.
+# @note b2-2 Go to Definition | F12 jumps to where the symbol under the cursor is defined.
+# @note b2-3 Format Document | ⇧⌥F formats the whole file with the configured formatter.
+# @note knob-ccw Previous Tab | ⌘⇧[ switches to the editor tab on the left.
+# @note knob-press Save | ⌘S saves the current file.
+# @note knob-cw Next Tab | ⌘⇧] switches to the editor tab on the right.
+#
+# VS Code (macOS) — 3x2 + 1 knob template
+#
+#   ┌──────────────┬──────────────┬──────────────┐
+#   │ ⌘⇧P          │ ⌘P           │ Ctrl+`       │   knob CCW   = previous tab
+#   │ cmd palette  │ quick open   │ terminal     │   knob press = save
+#   ├──────────────┼──────────────┼──────────────┤   knob CW    = next tab
+#   │ ⌘/           │ F12          │ ⇧⌥F          │
+#   │ comment      │ definition   │ format       │
+#   └──────────────┴──────────────┴──────────────┘
+#
+# F12 is sent as a real F12 keystroke, so it works without holding fn.
+
+model: ch57x-2
+orientation: normal
+rows: 2
+columns: 3
+knobs: 1
+
+layers:
+  - buttons:
+      - ["cmd-shift-p", "cmd-p", "ctrl-grave"]
+      - ["cmd-slash", "f12", "shift-alt-f"]
+    knobs:
+      - ccw: "cmd-shift-leftbracket"
+        press: "cmd-s"
+        cw: "cmd-shift-rightbracket"

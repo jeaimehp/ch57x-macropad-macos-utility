@@ -45,7 +45,7 @@ struct TemplateGuideView: View {
                     Text("None bundled").foregroundStyle(.secondary)
                 }
                 ForEach(store.templates) { t in
-                    Label(t.name, systemImage: "gamecontroller").tag(Source.template(t.id))
+                    Label(t.name, systemImage: "square.grid.3x2").tag(Source.template(t.id))
                 }
             }
             Section("Saved Configs") {

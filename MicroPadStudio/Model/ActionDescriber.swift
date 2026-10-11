@@ -44,7 +44,7 @@ enum ActionDescriber {
     ]
 
     private static let modifierNames: [String: String] = [
-        "ctrl": "Ctrl", "shift": "Shift", "alt": "Alt", "opt": "Option",
+        "ctrl": "Ctrl", "shift": "Shift", "alt": "Alt (⌥)", "opt": "⌥ Option",
         "win": "Win", "cmd": "⌘ Cmd", "rctrl": "Right Ctrl", "rshift": "Right Shift",
         "ralt": "Right Alt", "ropt": "Right Option", "rwin": "Right Win", "rcmd": "Right ⌘",
     ]

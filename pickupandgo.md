@@ -19,6 +19,7 @@
 - Tests: selftest += notes round-trip + CLI validate, describer cases, every bundled template has
   @title/@note and validates; `--layout-test --guide` hosts the sheet. All PASS. GUI checked via
   screenshots (guide: template / saved / editor views; load-into-editor; inspector note fields).
+- Templates shipped: Total Annihilation (Windows), VS Code (macOS) — knob = prev/next tab, press = save.
 - Library copy "Total Annihilation" replaced with the annotated template. Pad NOT reflashed
   (still single-layer a s d / z x c, knob ←/enter/→).
 
