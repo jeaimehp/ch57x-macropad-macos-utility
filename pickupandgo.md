@@ -3,6 +3,24 @@
 > Purpose: any AI model can resume this project from this file alone.
 > Newest entry at the top. Keep updated after every meaningful step.
 
+## STATE 2026-10-10 (late) — 🧭 MENU BAR HELPER + 🖨 PRINTABLE LABELS
+
+- **MicroPad Menu.app** (target `MicroPadMenu`, LSUIElement, bundle `com.micropadstudio.menu`): MenuBarExtra
+  `.menu` style; shares `MicroPadStudio/Model` + 4 Services files. Templates + saved configs as submenus
+  (Flash to Pad + numbered cheat sheet); ✓ = matches `PadState` digest; icon spins while flashing;
+  NSAlert confirm with "Don't ask again"; Open Studio; Launch at Login (SMAppService).
+  `MenuSelftest` (needs MICROPAD_SUPPORT_DIR + MICROPAD_TOOL_PATH=fake tool) PASS. Menu verified via
+  System Events (`menu bar item 1 of menu bar 2` of process "MicroPad Menu"). Real hardware flash via the
+  helper NOT yet done (same `Ch57xTool.upload` as Studio, which is hardware-verified).
+- `PadState` (`Application Support/MicroPadStudio/pad-state.json`) written by both apps after upload.
+- `Ch57xTool.upload`: flock on `upload.lock` → `.busy`; timeout 120 s. Test env overrides:
+  `MICROPAD_TOOL_PATH`, `MICROPAD_SUPPORT_DIR`.
+- **Labels PDF**: `LabelSheetView` (true mm, Letter) + `LabelSheetPDF.write` (ImageRenderer → CGContext PDF);
+  button "Print Labels (PDF)…" in the guide footer → NSSavePanel → opens in Preview. Selftest renders all
+  templates (1 page, Letter mediabox). Inspect: `MPS_KEEP_PDF=1 … --selftest mapping.yaml` then
+  `sips -s format png file.pdf --out x.png`. Keycap sticker size = `LabelSheetView.keycapMM` (15 mm).
+- `package_dist.sh` builds/signs both apps; zip contains both.
+
 ## STATE 2026-10-10 — 📋 TEMPLATE GUIDE + CONTROL NOTES + APP ICON
 
 - **Templates** toolbar button (Re-scan became an icon to fit 980pt) → `TemplateGuideView` sheet (900×620):

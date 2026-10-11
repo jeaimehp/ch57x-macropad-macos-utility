@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 /// "Templates" sheet: browse built-in templates, saved library configs and the
 /// current editor mapping. Each shows a pictorial pad + a numbered listing that
@@ -146,6 +147,25 @@ struct TemplateGuideView: View {
         return PadDiagramView.palette[(c.number - 1) % PadDiagramView.palette.count]
     }
 
+    // MARK: - Labels PDF
+
+    private func printLabels() {
+        guard let (name, m) = resolved else { return }
+        let title = m.title ?? name
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [.pdf]
+        panel.nameFieldStringValue = "\(ConfigLibrary.sanitize(title)) labels.pdf"
+        panel.directoryURL = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        do {
+            try LabelSheetPDF.write(mapping: m, title: title, to: url)
+            NSWorkspace.shared.open(url)     // opens in Preview, ready to print (⌘P)
+            store.lastResult = "🖨 label sheet saved: \(url.lastPathComponent) — print at 100 %"
+        } catch {
+            store.lastResult = "❌ couldn't create PDF: \(error.localizedDescription)"
+        }
+    }
+
     // MARK: - Footer
 
     private var footer: some View {
@@ -161,6 +181,13 @@ struct TemplateGuideView: View {
             default:
                 EmptyView()
             }
+            Button {
+                printLabels()
+            } label: {
+                Label("Print Labels (PDF)…", systemImage: "printer")
+            }
+            .disabled(resolved == nil)
+            .help("Make a printable sheet: keycap stickers, knob tags, desk card and reference")
             Spacer()
             Text("Loading only changes the editor — use Upload to Pad to flash it.")
                 .font(.caption).foregroundStyle(.secondary)

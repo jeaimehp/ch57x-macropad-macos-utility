@@ -172,6 +172,22 @@ struct MicroPadStudioApp: App {
                 print("SELFTEST FAIL template '\(t.id)': \(MappingLint.problems(t.mapping))"); exit(2)
             }
             print("SELFTEST lint ok (≤\(MappingLint.maxAccords) keystrokes per sequence)")
+            // Printable label sheet: every template renders to a 1-page Letter PDF.
+            let pdfDir = FileManager.default.temporaryDirectory.appendingPathComponent("mps-pdf-\(UUID().uuidString)")
+            try FileManager.default.createDirectory(at: pdfDir, withIntermediateDirectories: true)
+            for t in templates {
+                let url = pdfDir.appendingPathComponent("\(t.id).pdf")
+                try MainActor.assumeIsolated { try LabelSheetPDF.write(mapping: t.mapping, title: t.name, to: url) }
+                let data = try Data(contentsOf: url)
+                guard data.count > 2000, data.prefix(4) == Data("%PDF".utf8),
+                      let doc = CGPDFDocument(url as CFURL), doc.numberOfPages == 1,
+                      doc.page(at: 1)?.getBoxRect(.mediaBox).size == LabelSheetView.page else {
+                    print("SELFTEST FAIL label PDF for '\(t.id)'"); exit(2)
+                }
+            }
+            if ProcessInfo.processInfo.environment["MPS_KEEP_PDF"] != nil { print("SELFTEST pdfs kept in \(pdfDir.path)") }
+            else { try? FileManager.default.removeItem(at: pdfDir) }
+            print("SELFTEST label PDFs ok (\(templates.count) × 1-page Letter)")
             print("SELFTEST templates ok (\(templates.map(\.name).joined(separator: ", ")))")
             print("SELFTEST PASS")
             exit(0)

@@ -56,6 +56,12 @@ test panel (buttons/knob/mouse via IOHIDManager).
 - **Templates** button: guide sheet listing built-in templates, saved configs and the
   current editor — each with a pictorial pad (functions printed on the keys/knob) and a
   numbered listing explaining every control. Load into editor / save to library.
+- **Print Labels (PDF)…** (Templates guide footer): one Letter page per config — true-size
+  keycap stickers (15 mm, two sets), knob tags, a desk card and a reference table, with a
+  50 mm scale bar. Print at 100 %.
+- **MicroPad Menu.app** (menu bar helper, no Dock icon): every template + saved config as a
+  submenu with *Flash to Pad* and a control cheat sheet; ✓ marks what's on the pad
+  (shared `pad-state.json`); uploads are flock-serialised with Studio. Launch at Login toggle.
 - Control notes live in the YAML as comments the CLI ignores:
   `# @title …`, `# @summary …`, `# @note b1-1 Label | Explanation` (keys `b<row>-<col>`,
   `knob-ccw|press|cw`; `L2.` prefix for later layers). Edit them per key in the inspector;
