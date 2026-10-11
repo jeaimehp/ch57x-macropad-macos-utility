@@ -245,14 +245,11 @@ final class MappingStore: ObservableObject {
         }
     }
 
+    /// Single layer: this pad has no layer-switch button, so extra layers are unreachable.
     static let defaultMapping = PadMapping(
         rows: 2, columns: 3, knobs: 1,
         layers: [
             PadLayer(buttons: [["a", "s", "d"], ["z", "x", "c"]],
-                     knobs: [KnobActions(ccw: "wheelup", press: "click", cw: "wheeldown")]),
-            PadLayer(buttons: [["1", "2", "3"], ["4", "5", "6"]],
-                     knobs: [KnobActions(ccw: "volumedown", press: "mute", cw: "volumeup")]),
-            PadLayer(buttons: [["play", "prev", "next"], ["enter", "escape", "space"]],
                      knobs: [KnobActions(ccw: "left", press: "enter", cw: "right")]),
         ])
 

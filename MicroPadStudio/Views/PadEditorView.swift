@@ -6,14 +6,16 @@ struct PadEditorView: View {
 
     var body: some View {
         VStack(spacing: 10) {
-            // Layer tabs
-            Picker("Layer", selection: $store.currentLayer) {
-                ForEach(0..<store.mapping.layers.count, id: \.self) { i in
-                    Text("Layer \(i + 1)").tag(i)
+            // Layer tabs — hidden for single-layer configs (pads without a layer-switch button)
+            if store.mapping.layers.count > 1 {
+                Picker("Layer", selection: $store.currentLayer) {
+                    ForEach(0..<store.mapping.layers.count, id: \.self) { i in
+                        Text("Layer \(i + 1)").tag(i)
+                    }
                 }
+                .pickerStyle(.segmented)
+                .disabled(store.isBusy)
             }
-            .pickerStyle(.segmented)
-            .disabled(store.isBusy)
 
             HStack(alignment: .center, spacing: 22) {
                 // 3 columns × 2 rows (knob counted on the right, per project convention)

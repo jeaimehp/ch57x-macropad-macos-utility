@@ -12,27 +12,11 @@ rows: 2
 columns: 3
 knobs: 1
 
-# Three layers, switched with the side button (LED blinks to show layer).
+# Single layer: this pad has no layer-switch button, so extra layers are unreachable.
 layers:
   - buttons:
       - ["a", "s", "d"]
       - ["z", "x", "c"]
-    knobs:
-      - ccw: "wheelup"
-        press: "click"
-        cw: "wheeldown"
-
-  - buttons:
-      - ["1", "2", "3"]
-      - ["4", "5", "6"]
-    knobs:
-      - ccw: "volumedown"
-        press: "mute"
-        cw: "volumeup"
-
-  - buttons:
-      - ["play", "prev", "next"]
-      - ["enter", "escape", "space"]
     knobs:
       - ccw: "left"
         press: "enter"
