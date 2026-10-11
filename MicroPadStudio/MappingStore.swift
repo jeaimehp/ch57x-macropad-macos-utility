@@ -34,6 +34,9 @@ final class MappingStore: ObservableObject {
     @Published var activeConfigName: String?          // nil = unsaved working copy
     @Published var libraryEntries: [ConfigLibrary.Entry] = []
 
+    // MARK: Templates + notes
+    let templates: [PadTemplate] = TemplateLibrary.load()
+
     init() {
         // Default: the 3x2+1knob layout this project ships with (mapping.yaml @ a2e39b6).
         mapping = Self.defaultMapping
@@ -74,6 +77,22 @@ final class MappingStore: ObservableObject {
             currentLayer = 0; selection = nil
             lastResult = "📂 loaded '\(name)'"
         } catch { lastResult = "❌ load failed: \(error.localizedDescription)" }
+    }
+
+    /// Put a built-in template into the editor as an unsaved working copy.
+    func loadTemplate(_ t: PadTemplate) {
+        mapping = t.mapping
+        activeConfigName = nil
+        currentLayer = 0; selection = nil
+        lastResult = "📋 loaded template '\(t.name)' (not saved, not uploaded)"
+    }
+
+    func saveTemplateToLibrary(_ t: PadTemplate) {
+        do {
+            let name = try library.save(t.mapping, as: t.name)
+            refreshLibrary()
+            lastResult = "💾 template saved to library as '\(name)'"
+        } catch { lastResult = "❌ save failed: \(error.localizedDescription)" }
     }
 
     func newConfig() {
@@ -289,6 +308,24 @@ final class MappingStore: ObservableObject {
             }
         }
         mapping.layers[currentLayer] = layer
+    }
+
+    private func noteKey(_ slot: Slot) -> String {
+        switch slot {
+        case .button(let r, let c): return PadMapping.noteKey(layer: currentLayer, button: r, col: c)
+        case .knobCCW:   return PadMapping.noteKey(layer: currentLayer, knob: "ccw")
+        case .knobPress: return PadMapping.noteKey(layer: currentLayer, knob: "press")
+        case .knobCW:    return PadMapping.noteKey(layer: currentLayer, knob: "cw")
+        }
+    }
+
+    func note(for slot: Slot) -> SlotNote? { mapping.notes[noteKey(slot)] }
+
+    /// Empty label + detail removes the note.
+    func setNote(label: String, detail: String, for slot: Slot) {
+        let l = label.trimmingCharacters(in: .whitespaces)
+        let d = detail.trimmingCharacters(in: .whitespaces)
+        mapping.notes[noteKey(slot)] = (l.isEmpty && d.isEmpty) ? nil : SlotNote(label: l, detail: d)
     }
 
     func slotLabel(_ slot: Slot) -> String {

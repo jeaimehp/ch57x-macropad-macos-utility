@@ -12,7 +12,7 @@ installed at `~/.local/bin/ch57x-keyboard-tool`).
 | `mapping.yaml` | Active key-mapping config (2×3 buttons + 1 knob, 1 layer — the pad has no layer-switch button) — currently flashed on the pad |
 | `MicroPadStudio/` | SwiftUI app source (Model / Services / Views) |
 | `project.yml` | XcodeGen spec (`xcodegen generate` → `.xcodeproj`, gitignored) |
-| `templates/` | Ready-made mappings (e.g. `total-annihilation.yaml`) — import in the app or `upload <` directly |
+| `templates/` | Built-in templates bundled into the app (e.g. `total-annihilation.yaml`); also usable with `upload <` directly |
 | `vendor/` | Bundled `ch57x-keyboard-tool` v1.7.0 universal binary (MIT) |
 | `scripts/` | GUI-verification helpers (CG window list, displays, AX dump) |
 | `MILESTONES.md` / `pickupandgo.md` | Plan + handoff log |
@@ -53,11 +53,18 @@ test panel (buttons/knob/mouse via IOHIDManager).
   `~/Library/Keychains/micropad-signing.keychain-db`, password in
   `~/.config/micropad-studio/`). Stable signature ⇒ Input Monitoring grant survives rebuilds.
   Not Apple-issued: other Macs still see an unidentified developer.
+- **Templates** button: guide sheet listing built-in templates, saved configs and the
+  current editor — each with a pictorial pad (functions printed on the keys/knob) and a
+  numbered listing explaining every control. Load into editor / save to library.
+- Control notes live in the YAML as comments the CLI ignores:
+  `# @title …`, `# @summary …`, `# @note b1-1 Label | Explanation` (keys `b<row>-<col>`,
+  `knob-ccw|press|cw`; `L2.` prefix for later layers). Edit them per key in the inspector;
+  unannotated configs get generated explanations.
 - Headless tests: `MicroPadStudio.app/Contents/MacOS/MicroPadStudio --selftest mapping.yaml`
 - Self-contained: the app bundles `ch57x-keyboard-tool` (from `vendor/`) in
   `Contents/Resources` and falls back to `~/.local/bin/ch57x-keyboard-tool`.
   PATH is not searched.
-- Layout regression test: `MicroPadStudio.app/Contents/MacOS/MicroPadStudio --layout-test [--select-key]`
+- Layout regression test: `MicroPadStudio.app/Contents/MacOS/MicroPadStudio --layout-test [--select-key | --guide]`
 - Yams is pinned to an exact version in `project.yml` (the generated
   `Package.resolved` is gitignored).
 

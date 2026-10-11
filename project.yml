@@ -20,6 +20,9 @@ targets:
       - path: MicroPadStudio
       - path: vendor/ch57x-keyboard-tool
         buildPhase: resources
+      - path: templates
+        type: folder
+        buildPhase: resources
     dependencies:
       - package: Yams
     settings:

@@ -49,9 +49,16 @@ struct PadEditorView: View {
             store.selection = (store.selection == slot) ? nil : slot
         } label: {
             VStack(spacing: 3) {
-                Text("\(row + 1)·\(col + 1)")
-                    .font(.system(size: 9))
-                    .foregroundStyle(.tertiary)
+                if let label = store.note(for: slot)?.label, !label.isEmpty {
+                    Text(label)
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(Color.accentColor)
+                        .lineLimit(1).minimumScaleFactor(0.7)
+                } else {
+                    Text("\(row + 1)·\(col + 1)")
+                        .font(.system(size: 9))
+                        .foregroundStyle(.tertiary)
+                }
                 Text(store.action(for: slot))
                     .font(.system(.body, design: .monospaced))
                     .lineLimit(2)
@@ -73,7 +80,8 @@ struct PadEditorView: View {
             )
         }
         .buttonStyle(.plain)
-        .help("Row \(row + 1), column \(col + 1)")
+        .help(store.note(for: slot).map { "\($0.label)\($0.detail.isEmpty ? "" : " — \($0.detail)")" }
+              ?? "Row \(row + 1), column \(col + 1)")
     }
 
     @ViewBuilder
@@ -94,7 +102,9 @@ struct PadEditorView: View {
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: symbol).font(.system(size: 10))
-                Text(label).font(.system(size: 9)).foregroundStyle(.secondary)
+                Text(store.note(for: slot)?.label.nilIfEmpty ?? label)
+                    .font(.system(size: 9)).foregroundStyle(.secondary)
+                    .lineLimit(1).minimumScaleFactor(0.7)
                 Spacer(minLength: 2)
                 Text(store.action(for: slot))
                     .font(.system(.caption, design: .monospaced))
@@ -156,4 +166,8 @@ struct LiveTestPanelView: View {
         }
         .padding(.top, 2)
     }
+}
+
+extension String {
+    var nilIfEmpty: String? { isEmpty ? nil : self }
 }

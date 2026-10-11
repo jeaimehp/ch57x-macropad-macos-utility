@@ -22,6 +22,7 @@ struct ContentView: View {
     @StateObject private var store: MappingStore
     @State private var confirmUpload = false
     @State private var showLibrary = false
+    @State private var showTemplates = false
     @State private var showImporter = false
     @State private var showExporter = false
     @State private var exportDoc: YAMLDocument?
@@ -56,7 +57,14 @@ struct ContentView: View {
                 .popover(isPresented: $showLibrary, arrowEdge: .bottom) {
                     ConfigLibraryView(store: store)
                 }
-                Button("Re-scan") { store.device.refresh() }
+                Button {
+                    showTemplates = true
+                } label: {
+                    Label("Templates", systemImage: "rectangle.grid.3x2")
+                }
+                .disabled(store.isBusy)
+                Button { store.device.refresh() } label: { Image(systemName: "arrow.clockwise") }
+                    .help("Re-scan for the pad")
                     .disabled(store.isBusy)
                 Button("Import…") { showImporter = true }
                     .disabled(store.isBusy)
@@ -136,6 +144,7 @@ struct ContentView: View {
             .padding(8)
             .frame(minHeight: 36)
         }
+        .sheet(isPresented: $showTemplates) { TemplateGuideView(store: store) }
         .confirmationDialog(
             "Upload will overwrite the mapping currently stored on the pad. This cannot be read back.",
             isPresented: $confirmUpload, titleVisibility: .visible

@@ -6,6 +6,8 @@ struct ActionInspectorView: View {
     @State private var category: ActionCategory = .common
     @State private var search = ""
     @State private var custom = ""
+    @State private var noteLabel = ""
+    @State private var noteDetail = ""
 
     private var items: [(display: String, action: String)] {
         let base = ActionsCatalog.items(for: category)
@@ -44,6 +46,21 @@ struct ActionInspectorView: View {
                     }
                     .pickerStyle(.menu)
                     .fixedSize()
+                }
+
+                HStack(spacing: 4) {
+                    TextField("Function (e.g. Attack)", text: $noteLabel)
+                        .frame(maxWidth: 120)
+                    TextField("Explanation", text: $noteDetail)
+                }
+                .textFieldStyle(.roundedBorder)
+                .controlSize(.small)
+                .onSubmit { store.setNote(label: noteLabel, detail: noteDetail, for: slot) }
+                .onChange(of: noteLabel) { _ in store.setNote(label: noteLabel, detail: noteDetail, for: slot) }
+                .onChange(of: noteDetail) { _ in store.setNote(label: noteLabel, detail: noteDetail, for: slot) }
+                .onAppear {
+                    noteLabel = store.note(for: slot)?.label ?? ""
+                    noteDetail = store.note(for: slot)?.detail ?? ""
                 }
 
                 TextField("Filter…", text: $search)

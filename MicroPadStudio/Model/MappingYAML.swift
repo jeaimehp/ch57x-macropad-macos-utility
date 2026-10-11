@@ -27,7 +27,7 @@ enum MappingYAML {
     // MARK: - Emit (deterministic, upstream-compatible format)
 
     public static func emit(_ m: PadMapping) -> String {
-        var out = ""
+        var out = emitDocs(m)
         out += "model: \(yamlString(m.model))\n"
         out += "orientation: \(m.orientation.rawValue)\n"
         out += "rows: \(m.rows)\n"
@@ -48,6 +48,56 @@ enum MappingYAML {
             }
         }
         return out
+    }
+
+    /// `# @…` comment header carrying title/summary/notes. Notes are emitted in
+    /// key order so output stays deterministic.
+    private static func emitDocs(_ m: PadMapping) -> String {
+        var out = ""
+        if let t = m.title, !t.isEmpty { out += "# @title \(oneLine(t))\n" }
+        if let s = m.summary, !s.isEmpty { out += "# @summary \(oneLine(s))\n" }
+        for key in m.notes.keys.sorted() {
+            let n = m.notes[key]!
+            let label = oneLine(n.label).replacingOccurrences(of: "|", with: "/")
+            out += "# @note \(key) \(label)"
+            if !n.detail.isEmpty { out += " | \(oneLine(n.detail))" }
+            out += "\n"
+        }
+        if !out.isEmpty { out += "\n" }
+        return out
+    }
+
+    private static func oneLine(_ s: String) -> String {
+        s.components(separatedBy: .newlines).joined(separator: " ")
+            .trimmingCharacters(in: .whitespaces)
+    }
+
+    /// Reads `# @title`, `# @summary`, `# @note <key> <label> [| <detail>]` lines.
+    static func parseDocs(_ text: String) -> (title: String?, summary: String?, notes: [String: SlotNote]) {
+        var title: String?, summary: String?
+        var notes: [String: SlotNote] = [:]
+        for raw in text.components(separatedBy: .newlines) {
+            let line = raw.trimmingCharacters(in: .whitespaces)
+            guard line.hasPrefix("#") else { continue }
+            let body = line.dropFirst().trimmingCharacters(in: .whitespaces)
+            guard body.hasPrefix("@") else { continue }
+            let parts = body.dropFirst().split(separator: " ", maxSplits: 1).map(String.init)
+            guard parts.count == 2 else { continue }
+            let value = parts[1].trimmingCharacters(in: .whitespaces)
+            switch parts[0] {
+            case "title": title = value
+            case "summary": summary = value
+            case "note":
+                let kv = value.split(separator: " ", maxSplits: 1).map(String.init)
+                guard kv.count == 2 else { continue }
+                let pieces = kv[1].split(separator: "|", maxSplits: 1).map {
+                    $0.trimmingCharacters(in: .whitespaces)
+                }
+                notes[kv[0]] = SlotNote(label: pieces[0], detail: pieces.count > 1 ? pieces[1] : "")
+            default: continue
+            }
+        }
+        return (title, summary, notes)
     }
 
     private static func yamlString(_ s: String) -> String {
@@ -110,7 +160,9 @@ enum MappingYAML {
             layers.append(PadLayer(buttons: buttons, knobs: knobList))
         }
 
-        return PadMapping(model: model, orientation: orientation,
-                          rows: rows, columns: columns, knobs: knobs, layers: layers)
+        var mapping = PadMapping(model: model, orientation: orientation,
+                                 rows: rows, columns: columns, knobs: knobs, layers: layers)
+        (mapping.title, mapping.summary, mapping.notes) = parseDocs(text)
+        return mapping
     }
 }

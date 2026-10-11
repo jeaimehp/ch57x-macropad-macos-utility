@@ -3,6 +3,25 @@
 > Purpose: any AI model can resume this project from this file alone.
 > Newest entry at the top. Keep updated after every meaningful step.
 
+## STATE 2026-10-10 — 📋 TEMPLATE GUIDE + CONTROL NOTES + APP ICON
+
+- **Templates** toolbar button (Re-scan became an icon to fit 980pt) → `TemplateGuideView` sheet (900×620):
+  sidebar = Built-in Templates (`Resources/templates/*.yaml`, from repo `templates/` folder ref) /
+  Saved Configs (library) / Current editor; detail = `PadDiagramView` (rainbow keycaps like the icon,
+  numbered badges, knob with ↻/press/↺) + numbered listing (position, keys, function, explanation).
+  Footer: Load into Editor (template or saved) / Save to Library (template).
+- **Notes format** (`MappingYAML.emitDocs/parseDocs`): `# @title`, `# @summary`, `# @note <key> <label> | <detail>`;
+  keys from `PadMapping.noteKey` (`b1-1`, `knob-press`, `L2.` prefix). CLI ignores comments (selftest proves it).
+  Persist through library save/dup/rename/export because they all go emit→parse.
+- `ActionDescriber` → "Ctrl + C" / "Copy (Windows/Linux)" fallbacks when a control has no note.
+- Editor tiles + knob segments show the note label; inspector has Function / Explanation fields.
+- App icon from `design/icon-source.png` via `design/make_icon.py` (asset catalog `AppIcon`).
+- Tests: selftest += notes round-trip + CLI validate, describer cases, every bundled template has
+  @title/@note and validates; `--layout-test --guide` hosts the sheet. All PASS. GUI checked via
+  screenshots (guide: template / saved / editor views; load-into-editor; inspector note fields).
+- Library copy "Total Annihilation" replaced with the annotated template. Pad NOT reflashed
+  (still single-layer a s d / z x c, knob ←/enter/→).
+
 ## STATE 2026-10-10 (signing) — 🔏 STABLE SIGNING IDENTITY — dist signed; TCC re-grant pending once
 
 - `scripts/setup_signing.sh` (run once, idempotent): self-signed codeSigning cert

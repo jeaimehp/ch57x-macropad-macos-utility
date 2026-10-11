@@ -122,6 +122,42 @@ struct MicroPadStudioApp: App {
             if imp.contains("/") || !lib.exists(imp) { print("SELFTEST FAIL import sanitize \(imp)"); exit(2) }
             try? FileManager.default.removeItem(at: libDir)
             print("SELFTEST config library ok (save/collision/load/dup/rename/delete/import)")
+            // Notes: # @title/@summary/@note survive emit → parse, and the CLI ignores them.
+            var noted = parsed
+            noted.title = "Noted"; noted.summary = "Summary with | pipe"
+            noted.notes = [PadMapping.noteKey(layer: 0, button: 0, col: 0): SlotNote(label: "Copy", detail: "Copies | text"),
+                           PadMapping.noteKey(layer: 0, knob: "press"): SlotNote(label: "Mute")]
+            let notedYAML = MappingYAML.emit(noted)
+            let notedBack = try MappingYAML.parse(notedYAML)
+            guard notedBack == noted else { print("SELFTEST FAIL notes round-trip\n\(notedYAML)"); exit(2) }
+            if Ch57xTool.binaryURL() != nil { try Ch57xTool().validate(notedYAML) }
+            let ctl = PadControls.list(noted)
+            guard ctl.count == parsed.rows * parsed.columns + (parsed.knobs > 0 ? 3 : 0),
+                  ctl[0].label == "Copy", ctl[0].documented, !ctl[1].documented else {
+                print("SELFTEST FAIL PadControls"); exit(2)
+            }
+            print("SELFTEST notes ok (round-trip, CLI-accepted, controls=\(ctl.count))")
+            // Action descriptions shown in the template guide.
+            let desc: [(String, String, String)] = [
+                ("ctrl-c", "Ctrl + C", "Copy (Windows/Linux)"), ("numpadminus", "Numpad −", "Presses the Numpad − key"),
+                ("<72>", "Pause (code 72)", "Sends the Pause key"), ("a", "A", "Types “A”"),
+                ("volumeup", "Volume +", "Volume up"), ("cmd-shift-4", "⌘ Cmd + Shift + 4", "Presses ⌘ Cmd + Shift + 4 together"),
+            ]
+            for (a, k, m) in desc {
+                let gk = ActionDescriber.keys(a), gm = ActionDescriber.meaning(a)
+                if gk != k || gm != m { print("SELFTEST FAIL describe '\(a)' → '\(gk)' / '\(gm)'"); exit(2) }
+            }
+            print("SELFTEST describe ok (\(desc.count) cases)")
+            // Every bundled template parses, has docs, and passes CLI validate.
+            let templates = TemplateLibrary.load()
+            guard !templates.isEmpty else { print("SELFTEST FAIL no bundled templates"); exit(2) }
+            for t in templates {
+                guard t.mapping.title != nil, !t.mapping.notes.isEmpty else {
+                    print("SELFTEST FAIL template '\(t.id)' missing @title/@note"); exit(2)
+                }
+                if Ch57xTool.binaryURL() != nil { try Ch57xTool().validate(MappingYAML.emit(t.mapping)) }
+            }
+            print("SELFTEST templates ok (\(templates.map(\.name).joined(separator: ", ")))")
             print("SELFTEST PASS")
             exit(0)
         } catch {
@@ -137,8 +173,12 @@ struct MicroPadStudioApp: App {
     /// the pad grid gets pushed off-screen" bug.
     static func runLayoutTest(args: [String]) -> Never {
         _ = NSApplication.shared
-        let w: CGFloat = 980, h: CGFloat = 540
-        let host = NSHostingView(rootView: ContentView().frame(width: w, height: h, alignment: .topLeading))
+        let guide = args.contains("--guide")
+        let w: CGFloat = guide ? 900 : 980, h: CGFloat = guide ? 620 : 540
+        let root: AnyView = guide
+            ? AnyView(TemplateGuideView(store: MappingStore()))
+            : AnyView(ContentView().frame(width: w, height: h, alignment: .topLeading))
+        let host = NSHostingView(rootView: root)
         host.frame = NSRect(x: 0, y: 0, width: w, height: h)
         host.layoutSubtreeIfNeeded()
         host.layoutSubtreeIfNeeded()   // second pass resolves min/ideal constraints
@@ -160,10 +200,10 @@ struct MicroPadStudioApp: App {
 
         let sel = args.contains("--select-key")
         if let bad = widestBad {
-            print("LAYOUT FAIL selection=\(sel): \(overflowCount) view(s) out of bounds; widest: \(bad.name) x=\(bad.rect.minX) maxX=\(bad.rect.maxX) y=\(bad.rect.minY) maxY=\(bad.rect.maxY)")
+            print("LAYOUT FAIL selection=\(sel) guide=\(guide): \(overflowCount) view(s) out of bounds; widest: \(bad.name) x=\(bad.rect.minX) maxX=\(bad.rect.maxX) y=\(bad.rect.minY) maxY=\(bad.rect.maxY)")
             exit(1)
         }
-        print("LAYOUT OK selection=\(sel): all views within \(Int(w))x\(Int(h))")
+        print("LAYOUT OK selection=\(sel) guide=\(guide): all views within \(Int(w))x\(Int(h))")
         exit(0)
     }
 }

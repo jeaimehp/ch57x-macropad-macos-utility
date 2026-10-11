@@ -1,3 +1,15 @@
+# @title Total Annihilation
+# @summary Classic 1997 RTS on Windows — unit selection, core orders and game-speed control using TA's default hotkeys.
+# @note b1-1 Commander | Ctrl+C selects your Commander and centres the view on it — find it fast when it's under attack.
+# @note b1-2 Select same type | Ctrl+Z selects every unit of the type(s) you already have selected (e.g. all your Peewees).
+# @note b1-3 Stop | Cancels the current orders of the selected units.
+# @note b2-1 Attack | Press, then left-click a unit or the ground to order an attack.
+# @note b2-2 Patrol | Press, then click waypoints. Units patrol and engage; constructors on patrol auto-repair and reclaim.
+# @note b2-3 Reclaim | Press, then click wreckage or trees — builders turn them into metal / energy.
+# @note knob-ccw Slower | Numpad − lowers game speed (skirmish, or when the host allows it).
+# @note knob-press Pause | Pause key — pauses / resumes the game.
+# @note knob-cw Faster | Numpad + raises game speed.
+#
 # Total Annihilation (1997, Windows) — 3x2 + 1 knob template
 # Uses TA's default hotkeys. The pad sends plain USB keystrokes, so a mapping
 # flashed from this Mac works unchanged when the pad is plugged into Windows.

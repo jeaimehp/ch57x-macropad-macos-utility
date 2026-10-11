@@ -11,6 +11,11 @@ public struct PadMapping: Codable, Equatable {
     public var columns: Int
     public var knobs: Int
     public var layers: [PadLayer]
+    /// Human documentation stored as `# @title / @summary / @note` YAML comments
+    /// (ignored by the CLI). Notes are keyed by `PadMapping.noteKey(...)`.
+    public var title: String?
+    public var summary: String?
+    public var notes: [String: SlotNote] = [:]
 
     public enum Orientation: String, Codable, CaseIterable, Identifiable {
         case normal, upsidedown, clockwise, counterclockwise
@@ -26,6 +31,26 @@ public struct PadMapping: Codable, Equatable {
         self.columns = columns
         self.knobs = knobs
         self.layers = layers
+    }
+
+    /// Stable note key for a control: "b<row>-<col>" (1-based) or "knob-ccw|press|cw",
+    /// prefixed "L<n>." for layers after the first.
+    public static func noteKey(layer: Int, button row: Int, col: Int) -> String {
+        layerPrefix(layer) + "b\(row + 1)-\(col + 1)"
+    }
+    public static func noteKey(layer: Int, knob part: String) -> String {
+        layerPrefix(layer) + "knob-\(part)"
+    }
+    private static func layerPrefix(_ layer: Int) -> String { layer == 0 ? "" : "L\(layer + 1)." }
+}
+
+/// What a control is *for*, e.g. label "Commander", detail "Selects your Commander…".
+public struct SlotNote: Codable, Equatable {
+    public var label: String
+    public var detail: String
+    public init(label: String, detail: String = "") {
+        self.label = label
+        self.detail = detail
     }
 }
 
