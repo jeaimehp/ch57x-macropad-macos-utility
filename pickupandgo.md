@@ -19,7 +19,9 @@
 - Tests: selftest += notes round-trip + CLI validate, describer cases, every bundled template has
   @title/@note and validates; `--layout-test --guide` hosts the sheet. All PASS. GUI checked via
   screenshots (guide: template / saved / editor views; load-into-editor; inspector note fields).
-- Templates shipped: Total Annihilation (Windows), VS Code (macOS) — knob = prev/next tab, press = save.
+- Templates shipped: Total Annihilation (Windows), VS Code (macOS), Git (macOS Terminal, oh-my-zsh aliases).
+- ⚠️ **Firmware limit: ≤5 accords per sequence** (upstream doc/actions.md). `ch57x-keyboard-tool validate`
+  does NOT enforce it (accepted 200). App enforces via `MappingLint` in Validate + Upload; selftest checks templates.
 - Library copy "Total Annihilation" replaced with the annotated template. Pad NOT reflashed
   (still single-layer a s d / z x c, knob ←/enter/→).
 

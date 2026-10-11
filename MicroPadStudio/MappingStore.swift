@@ -339,6 +339,10 @@ final class MappingStore: ObservableObject {
 
     func validate() {
         guard !isBusy else { return }
+        if let problem = MappingLint.problems(mapping).first {
+            lastResult = "❌ \(problem)"
+            return
+        }
         isBusy = true
         lastResult = "⏳ validating…"
         let yaml = yamlText
@@ -360,6 +364,10 @@ final class MappingStore: ObservableObject {
         guard !isBusy else { return }
         // Release our own IOHIDManager listen before the vendor write: a held
         // interface can stall the upload (documented tool pitfall).
+        if let problem = MappingLint.problems(mapping).first {
+            lastResult = "❌ not uploaded — \(problem)"
+            return
+        }
         if liveOn { setLive(on: false) }
         isBusy = true
         lastResult = "⏳ Uploading to pad — do not unplug…"

@@ -1,0 +1,39 @@
+# @title Git (macOS Terminal)
+# @summary Everyday git in Terminal / iTerm using the oh-my-zsh git plugin aliases (plugins=(git) in ~/.zshrc). The pad types each alias for you — sequences are capped at 5 keystrokes, so full git commands won't fit.
+# @note b1-1 Status | Types gst⏎ → git status: what changed, what's staged.
+# @note b1-2 Diff | Types gd⏎ → git diff: unstaged changes (q quits the pager).
+# @note b1-3 Stage all | Types gaa⏎ → git add --all: stage every change.
+# @note b2-1 Commit… | Types gcmsg → git commit --message. Finish with a space, "your message" and ⏎.
+# @note b2-2 Push | Types gp⏎ → git push to the upstream branch.
+# @note b2-3 Pull | Types gl⏎ → git pull from the upstream branch.
+# @note knob-ccw Previous command | ↑ recalls earlier commands from shell history (scrolls up in a pager).
+# @note knob-press Run | ⏎ runs the recalled command.
+# @note knob-cw Next command | ↓ moves forward through shell history (scrolls down in a pager).
+#
+# Git (macOS Terminal) — 3x2 + 1 knob template
+#
+#   ┌──────────────┬──────────────┬──────────────┐
+#   │ gst⏎         │ gd⏎          │ gaa⏎         │   knob CCW   = ↑ previous command
+#   │ status       │ diff         │ stage all    │   knob press = ⏎ run it
+#   ├──────────────┼──────────────┼──────────────┤   knob CW    = ↓ next command
+#   │ gcmsg        │ gp⏎          │ gl⏎          │
+#   │ commit -m …  │ push         │ pull         │
+#   └──────────────┴──────────────┴──────────────┘
+#
+# Requires oh-my-zsh's git plugin (aliases gst, gd, gaa, gcmsg, gp, gl). Without it,
+# add those aliases to ~/.zshrc, e.g.  alias gst='git status'
+
+model: ch57x-2
+orientation: normal
+rows: 2
+columns: 3
+knobs: 1
+
+layers:
+  - buttons:
+      - ["g,s,t,enter", "g,d,enter", "g,a,a,enter"]
+      - ["g,c,m,s,g", "g,p,enter", "g,l,enter"]
+    knobs:
+      - ccw: "up"
+        press: "enter"
+        cw: "down"

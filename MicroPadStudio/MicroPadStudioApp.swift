@@ -141,7 +141,8 @@ struct MicroPadStudioApp: App {
             let desc: [(String, String, String)] = [
                 ("ctrl-c", "Ctrl + C", "Copy (Windows/Linux)"), ("numpadminus", "Numpad −", "Presses the Numpad − key"),
                 ("<72>", "Pause (code 72)", "Sends the Pause key"), ("a", "A", "Types “A”"),
-                ("volumeup", "Volume +", "Volume up"), ("cmd-shift-4", "⌘ Cmd + Shift + 4", "Presses ⌘ Cmd + Shift + 4 together"),
+                ("volumeup", "Volume +", "Volume up"), ("g,s,t,enter", "gst⏎", "Types “gst⏎”"),
+                ("ctrl-a,ctrl-c", "Ctrl + A → Ctrl + C", "Types the sequence Ctrl + A → Ctrl + C"), ("cmd-shift-4", "⌘ Cmd + Shift + 4", "Presses ⌘ Cmd + Shift + 4 together"),
             ]
             for (a, k, m) in desc {
                 let gk = ActionDescriber.keys(a), gm = ActionDescriber.meaning(a)
@@ -157,6 +158,20 @@ struct MicroPadStudioApp: App {
                 }
                 if Ch57xTool.binaryURL() != nil { try Ch57xTool().validate(MappingYAML.emit(t.mapping)) }
             }
+            let accords: [(String, Int)] = [("a", 1), ("g,s,t,enter", 4), ("{delay(100)}left,a,right", 3),
+                                            ("move(10,0)", 1), ("drag(left,10,0),a", 2), ("a,b,c,d,e,f", 6)]
+            for (a, want) in accords where MappingLint.accordCount(a) != want {
+                print("SELFTEST FAIL accordCount '\(a)' → \(MappingLint.accordCount(a)) (want \(want))"); exit(2)
+            }
+            var tooLong = parsed
+            tooLong.layers[0].buttons[0][0] = "g,i,t,space,s,t,enter"
+            guard MappingLint.problems(tooLong).count == 1, MappingLint.problems(parsed).isEmpty else {
+                print("SELFTEST FAIL MappingLint.problems"); exit(2)
+            }
+            for t in templates where !MappingLint.problems(t.mapping).isEmpty {
+                print("SELFTEST FAIL template '\(t.id)': \(MappingLint.problems(t.mapping))"); exit(2)
+            }
+            print("SELFTEST lint ok (≤\(MappingLint.maxAccords) keystrokes per sequence)")
             print("SELFTEST templates ok (\(templates.map(\.name).joined(separator: ", ")))")
             print("SELFTEST PASS")
             exit(0)

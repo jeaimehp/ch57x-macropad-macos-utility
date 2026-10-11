@@ -57,3 +57,38 @@ enum PadControls {
         return "\(r), \(c)"
     }
 }
+
+/// Firmware limits the CLI's `validate` does not enforce (upstream doc/actions.md:
+/// "Up to five combinations may be used" per key sequence).
+enum MappingLint {
+    static let maxAccords = 5
+
+    /// Number of comma-separated accords, ignoring a leading `{options}` block and
+    /// commas inside mouse-action parentheses like `move(10,0)`.
+    static func accordCount(_ action: String) -> Int {
+        var a = Substring(action.trimmingCharacters(in: .whitespaces))
+        if a.hasPrefix("{"), let close = a.firstIndex(of: "}") { a = a[a.index(after: close)...] }
+        guard !a.isEmpty else { return 0 }
+        var depth = 0, count = 1
+        for ch in a {
+            if ch == "(" { depth += 1 } else if ch == ")" { depth = max(0, depth - 1) }
+            else if ch == ",", depth == 0 { count += 1 }
+        }
+        return count
+    }
+
+    /// Human-readable problems, empty when the mapping fits the firmware.
+    static func problems(_ m: PadMapping) -> [String] {
+        var out: [String] = []
+        for li in m.layers.indices {
+            let prefix = m.layers.count > 1 ? "Layer \(li + 1), " : ""
+            for c in PadControls.list(m, layer: li) {
+                let n = accordCount(c.action)
+                if n > maxAccords {
+                    out.append("\(prefix)\(c.position): \"\(c.action)\" is \(n) keystrokes — the pad plays at most \(maxAccords).")
+                }
+            }
+        }
+        return out
+    }
+}

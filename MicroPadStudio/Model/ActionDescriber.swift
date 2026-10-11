@@ -8,6 +8,7 @@ enum ActionDescriber {
     static func keys(_ action: String) -> String {
         let a = action.trimmingCharacters(in: .whitespaces)
         if a.isEmpty { return "—" }
+        if let typed = typedText(a) { return typed }
         if a.contains(",") {                       // sequence of accords
             return a.split(separator: ",").map { keys(String($0)) }.joined(separator: " → ")
         }
@@ -23,12 +24,31 @@ enum ActionDescriber {
         let a = action.trimmingCharacters(in: .whitespaces).lowercased()
         if let m = known[a] { return m }
         if let raw = rawCode(a), let name = rawNames[raw] { return "Sends the \(name) key" }
+        if let typed = typedText(a) { return "Types “\(typed)”" }
         if a.contains(",") { return "Types the sequence \(keys(a))" }
         if a.contains("(") { return mouseText(a) ?? "Custom mouse action" }
         let parts = a.split(separator: "-").map(String.init)
         if parts.count > 1 { return "Presses \(keys(a)) together" }
         if a.count == 1 { return "Types “\(a.uppercased())”" }
         return "Presses the \(keyName(a)) key"
+    }
+
+    /// A sequence of plain characters (plus space/enter) reads as the text it types:
+    /// "g,s,t,enter" → "gst⏎". Nil when any accord has modifiers or special keys.
+    private static func typedText(_ a: String) -> String? {
+        let parts = a.split(separator: ",", omittingEmptySubsequences: false).map(String.init)
+        guard parts.count > 1 else { return nil }
+        var out = ""
+        for p in parts {
+            switch p.lowercased() {
+            case "space": out += " "
+            case "enter": out += "⏎"
+            case let c where c.count == 1 && c.unicodeScalars.allSatisfy(CharacterSet.alphanumerics.contains):
+                out += c
+            default: return nil
+            }
+        }
+        return out
     }
 
     // MARK: - Tables
