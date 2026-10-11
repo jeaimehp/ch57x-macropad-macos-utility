@@ -18,7 +18,11 @@
 - **Labels PDF**: `LabelSheetView` (true mm, Letter) + `LabelSheetPDF.write` (ImageRenderer → CGContext PDF);
   button "Print Labels (PDF)…" in the guide footer → NSSavePanel → opens in Preview. Selftest renders all
   templates (1 page, Letter mediabox). Inspect: `MPS_KEEP_PDF=1 … --selftest mapping.yaml` then
-  `sips -s format png file.pdf --out x.png`. Keycap sticker size = `LabelSheetView.keycapMM` (15 mm).
+  `sips -s format png file.pdf --out x.png`. Keycap sticker size = `LabelSheetView.keycapMM` = **12 mm**.
+- **Physical pad (measured from user photo w/ ruler, 176 px/cm):** body ≈105×60 mm; standard MX keycaps
+  (base 18.1 mm, flat top ≈12.7 mm), key pitch ≈21 mm (~3 mm gaps — no room for printed overlay text);
+  knob ≈20 mm Ø flush with the right edge (no room for a ring); free plate below knob ≈18×22 mm →
+  knob legend 17×20 mm.
 - `package_dist.sh` builds/signs both apps; zip contains both.
 
 ## STATE 2026-10-10 — 📋 TEMPLATE GUIDE + CONTROL NOTES + APP ICON

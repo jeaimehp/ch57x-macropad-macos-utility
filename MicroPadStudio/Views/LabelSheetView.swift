@@ -3,15 +3,18 @@ import SwiftUI
 /// Printable US-Letter label sheet for one mapping, laid out in real millimetres
 /// (1 pt = 1/72 in) so it prints true to size at 100 %:
 ///   • keycap stickers (cut out, stick on the keys) — two sets
-///   • knob tags
+///   • knob legend for the plate below the knob
 ///   • desk card mirroring the pad layout
 ///   • full reference table
 struct LabelSheetView: View {
     let mapping: PadMapping
     let title: String
 
-    /// Sticker edge; MX-style keycap tops are ~12–15 mm. Adjust if your caps differ.
-    static let keycapMM: CGFloat = 15
+    /// Sticker edge. Measured from a photo of the pad: standard MX keycaps with a flat
+    /// top of ≈12.7 mm, so 12 mm leaves a small margin.
+    static let keycapMM: CGFloat = 12
+    /// Free plate area below the knob (pad ≈105×60 mm, knob ≈20 mm Ø at the right edge).
+    static let knobLegendMM = CGSize(width: 17, height: 20)
     static let page = CGSize(width: 612, height: 792)       // US Letter in points
 
     static func mm(_ v: CGFloat) -> CGFloat { v * 72 / 25.4 }
@@ -34,12 +37,12 @@ struct LabelSheetView: View {
             header
             HStack(alignment: .top, spacing: 24) {
                 VStack(alignment: .leading, spacing: 8) {
-                    section("1 · Keycap stickers", "Cut along the dashed lines and stick on top of each key (two sets).")
+                    section("1 · Keycap stickers", "12 mm — fits standard MX keycap tops. Cut along the dashed lines (two sets).")
                     HStack(spacing: mm(6)) { stickerSet; stickerSet }
                 }
                 VStack(alignment: .leading, spacing: 8) {
-                    section("2 · Knob tags", "Place next to the knob.")
-                    knobTags
+                    section("2 · Knob legend", "Stick on the plate below the knob (two copies).")
+                    HStack(spacing: mm(4)) { knobLegend; knobLegend }
                 }
             }
             VStack(alignment: .leading, spacing: 8) {
@@ -117,24 +120,22 @@ struct LabelSheetView: View {
         .overlay(Rectangle().strokeBorder(style: StrokeStyle(lineWidth: 0.5, dash: [2, 1.5])))
     }
 
-    private var knobTags: some View {
-        VStack(alignment: .leading, spacing: mm(2)) {
-            ForEach(knob) { c in
+    private var knobLegend: some View {
+        VStack(alignment: .leading, spacing: mm(1.2)) {
+            ForEach([2, 1, 0].filter { $0 < knob.count }, id: \.self) { i in
+                let c = knob[i]
                 let symbol = c.id.hasSuffix("ccw") ? "↺" : c.id.hasSuffix("cw") ? "↻" : "●"
-                HStack(spacing: 4) {
-                    Text(symbol).font(.system(size: 9, weight: .bold))
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text(c.label).font(.system(size: 7, weight: .bold)).lineLimit(1)
-                        Text(c.keys).font(.system(size: 5, design: .monospaced)).lineLimit(1)
-                    }
-                    .minimumScaleFactor(0.6)
+                HStack(alignment: .top, spacing: 2) {
+                    Text(symbol).font(.system(size: 6, weight: .bold))
+                    Text(c.label).font(.system(size: 5.5, weight: .bold))
+                        .lineLimit(2).minimumScaleFactor(0.6)
                 }
-                .padding(.horizontal, 4)
-                .frame(width: mm(34), height: mm(9), alignment: .leading)
-                .overlay(RoundedRectangle(cornerRadius: 4)
-                    .strokeBorder(style: StrokeStyle(lineWidth: 0.5, dash: [2, 1.5])))
             }
         }
+        .padding(mm(1.2))
+        .frame(width: mm(Self.knobLegendMM.width), height: mm(Self.knobLegendMM.height), alignment: .topLeading)
+        .overlay(RoundedRectangle(cornerRadius: 3)
+            .strokeBorder(style: StrokeStyle(lineWidth: 0.5, dash: [2, 1.5])))
     }
 
     private var deskCard: some View {
