@@ -1,5 +1,21 @@
 # pickupandgo.md — Handoff Log
 
+## STATE 2026-10-10 (evening) — ✅ FIRST FLASH SUCCEEDED — pad now runs repo mapping.yaml
+
+`ch57x-keyboard-tool upload < mapping.yaml` → **exit 0**, post-flash HID probe fast/responsive
+(no wedge). Pad state == `mapping.yaml` @ `a2e39b6` (committed unchanged — git history is the
+backup; no read-back exists). Validate passed immediately before upload (`config is valid 👌`).
+Note: macOS has no `timeout` binary — wrap CLI calls with `python3 subprocess.run(timeout=)`
+(the terminal harness also rejects shell `&` backgrounding in foreground commands).
+
+### REMAINING
+1. User eyes-on GUI: `dist/MicroPadStudio.app` (19:59 build, layout-test clean both states) —
+   click keys at min window size: grid must stay visible; Validate/Upload show ⏳ without freezing.
+2. Hardware feel: press the 6 buttons / knob on layer 1 (a s d / z x c + wheel) to confirm
+   the mapping took. Layer switch via side button.
+3. App Live Test panel: toggle it, grant Input Monitoring (adhoc app is targeted by path; if
+   no events, System Settings → Privacy → Input Monitoring). Highlights must match presses.
+
 ## STATE 2026-10-10 — 🐛 USER-REPORTED BUGS FIXED (UI clipping + upload freeze) — dist rebuilt, needs eyes-on + hardware test
 
 User tested the M6 dist build and found two real bugs. Both fixed, with a headless
