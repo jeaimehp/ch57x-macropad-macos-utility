@@ -24,6 +24,10 @@ final class MenuModel: ObservableObject {
         didSet { UserDefaults.standard.set(askBeforeFlashing, forKey: Self.askKey) }
     }
 
+    /// F13–F20 → app hotkeys declared by the config currently on the pad.
+    let hotKeys = AppHotKeys()
+    @Published private(set) var activeHotKeys: [String: String] = [:]
+
     private static let askKey = "askBeforeFlashing"
     private let library = ConfigLibrary()
     private var refreshTimer: Timer?
@@ -51,6 +55,10 @@ final class MenuModel: ObservableObject {
             }
         }
         padState = PadState.load()
+        // Only the on-pad config's @app keys are live, so F13 means nothing when e.g. Zoom is flashed.
+        let onPad = (templates + saved).first { isOnPad($0) }
+        hotKeys.update(onPad?.mapping.apps ?? [:])
+        if activeHotKeys != hotKeys.active { activeHotKeys = hotKeys.active }
     }
 
     /// True when this item's buttons/knob match what was last flashed (notes ignored).

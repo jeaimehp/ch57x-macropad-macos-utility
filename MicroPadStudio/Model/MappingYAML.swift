@@ -63,6 +63,9 @@ enum MappingYAML {
             if !n.detail.isEmpty { out += " | \(oneLine(n.detail))" }
             out += "\n"
         }
+        for key in m.apps.keys.sorted() {
+            out += "# @app \(key) \(oneLine(m.apps[key]!))\n"
+        }
         if !out.isEmpty { out += "\n" }
         return out
     }
@@ -73,9 +76,11 @@ enum MappingYAML {
     }
 
     /// Reads `# @title`, `# @summary`, `# @note <key> <label> [| <detail>]` lines.
-    static func parseDocs(_ text: String) -> (title: String?, summary: String?, notes: [String: SlotNote]) {
+    static func parseDocs(_ text: String) -> (title: String?, summary: String?, notes: [String: SlotNote],
+                                              apps: [String: String]) {
         var title: String?, summary: String?
         var notes: [String: SlotNote] = [:]
+        var apps: [String: String] = [:]
         for raw in text.components(separatedBy: .newlines) {
             let line = raw.trimmingCharacters(in: .whitespaces)
             guard line.hasPrefix("#") else { continue }
@@ -94,10 +99,13 @@ enum MappingYAML {
                     $0.trimmingCharacters(in: .whitespaces)
                 }
                 notes[kv[0]] = SlotNote(label: pieces[0], detail: pieces.count > 1 ? pieces[1] : "")
+            case "app":
+                let kv = value.split(separator: " ", maxSplits: 1).map(String.init)
+                if kv.count == 2 { apps[kv[0].lowercased()] = kv[1].trimmingCharacters(in: .whitespaces) }
             default: continue
             }
         }
-        return (title, summary, notes)
+        return (title, summary, notes, apps)
     }
 
     private static func yamlString(_ s: String) -> String {
@@ -162,7 +170,7 @@ enum MappingYAML {
 
         var mapping = PadMapping(model: model, orientation: orientation,
                                  rows: rows, columns: columns, knobs: knobs, layers: layers)
-        (mapping.title, mapping.summary, mapping.notes) = parseDocs(text)
+        (mapping.title, mapping.summary, mapping.notes, mapping.apps) = parseDocs(text)
         return mapping
     }
 }

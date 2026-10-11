@@ -127,6 +127,7 @@ struct MicroPadStudioApp: App {
             noted.title = "Noted"; noted.summary = "Summary with | pipe"
             noted.notes = [PadMapping.noteKey(layer: 0, button: 0, col: 0): SlotNote(label: "Copy", detail: "Copies | text"),
                            PadMapping.noteKey(layer: 0, knob: "press"): SlotNote(label: "Mute")]
+            noted.apps = ["f13": "com.meta.endo"]
             let notedYAML = MappingYAML.emit(noted)
             let notedBack = try MappingYAML.parse(notedYAML)
             guard notedBack == noted else { print("SELFTEST FAIL notes round-trip\n\(notedYAML)"); exit(2) }

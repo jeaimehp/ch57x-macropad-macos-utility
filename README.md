@@ -63,6 +63,7 @@ test panel (buttons/knob/mouse via IOHIDManager).
 - **MicroPad Menu.app** (menu bar helper, no Dock icon): every template + saved config as a
   submenu with *Flash to Pad* and a control cheat sheet; ✓ marks what's on the pad
   (shared `pad-state.json`); uploads are flock-serialised with Studio. Launch at Login toggle.
+  Also turns spare keys F13–F20 into "open/focus app" for the on-pad config's `# @app f13 <bundle id>` lines.
 - Control notes live in the YAML as comments the CLI ignores:
   `# @title …`, `# @summary …`, `# @note b1-1 Label | Explanation` (keys `b<row>-<col>`,
   `knob-ccw|press|cw`; `L2.` prefix for later layers). Edit them per key in the inspector;

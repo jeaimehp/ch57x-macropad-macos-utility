@@ -1,13 +1,14 @@
 # @title Meta Muse (macOS)
-# @summary Meta's Muse AI assistant on a Mac — talk to it, hear replies, share screenshots. Dictate and Read Response use built-in macOS speech features (works in any app); New chat and Stop are common chat-app conventions, UNVERIFIED for Muse since Meta hasn't published its shortcuts.
-# @note b1-1 New chat | ⌘N starts a new conversation (common in chat apps — unverified for Muse).
-# @note b1-2 Dictate to Chat | Press Control twice to start macOS Dictation into Muse's chat box; speak, then press again (or Esc) to finish. One-time setup: System Settings → Keyboard → Dictation → On, Shortcut = "Press Control Key Twice".
+# @summary Meta's Muse AI assistant on a Mac — open it, talk to it, hear replies, share screenshots. Open Muse and Dictate's focus step use F13, which the MicroPad Menu helper turns into "open/focus Muse". Dictate and Read Response use built-in macOS speech features; Stop is a common chat-app convention, unverified for Muse.
+# @note b1-1 Open Muse | Opens Muse, or brings its window to the front if it's already running (F13 — handled by the MicroPad Menu helper, which must be running).
+# @note b1-2 Dictate to Chat | Brings Muse to the front (F13), then presses Control twice to start macOS Dictation into its chat box; speak, then press Esc to finish. If Muse wasn't running yet, press again once it's open. One-time setup: System Settings → Keyboard → Dictation → On, Shortcut = "Press Control Key Twice".
 # @note b1-3 Read Response | Select Muse's reply, press to have your Mac read it aloud; press again to stop. One-time setup: System Settings → Accessibility → Spoken Content → "Speak selection" On (shortcut ⌥Esc).
 # @note b2-1 Screenshot → clipboard | ⌃⌘⇧4 lets you drag a screen area to the clipboard — then press the knob to paste it into Muse.
 # @note b2-2 Stop | Esc usually stops a reply in progress (unverified for Muse).
 # @note b2-3 Send | ⏎ sends your prompt.
 # @note knob-ccw Scroll up | Scrolls back through the conversation.
 # @note knob-press Paste | ⌘V pastes text or a screenshot into the prompt.
+# @app f13 com.meta.endo
 # @note knob-cw Scroll down | Scrolls forward through the conversation.
 #
 
@@ -19,7 +20,7 @@ knobs: 1
 
 layers:
   - buttons:
-      - ["cmd-n", "ctrl,ctrl", "alt-escape"]
+      - ["f13", "{delay(250)}f13,ctrl,ctrl", "alt-escape"]
       - ["ctrl-cmd-shift-4", "escape", "enter"]
     knobs:
       - ccw: "wheelup"

@@ -47,6 +47,17 @@ enum MenuSelftest {
         } catch { fail("expected busy, got \(error)") }
         close(fd)
 
+        // App hotkeys: lookup by bundle id / name, register + unregister (never fired here).
+        guard AppHotKeys.appURL("com.apple.finder") != nil, AppHotKeys.appURL("Calculator") != nil,
+              AppHotKeys.appURL("no.such.app.xyz") == nil else { fail("appURL lookup") }
+        let hk = AppHotKeys()
+        guard hk.update(["f19": "com.apple.finder", "f99": "ignored"]) == 1 else { fail("hotkey register") }
+        guard hk.update([:]) == 0 else { fail("hotkey unregister") }
+        if let muse = model.templates.first(where: { $0.id == "template:meta-muse-macos" }) {
+            guard muse.mapping.apps["f13"] != nil else { fail("Muse template lacks @app f13") }
+        }
+        print("MENU SELFTEST hotkeys ok (F13–F20 register/unregister, app lookup)")
+
         print("MENU SELFTEST PASS")
         exit(0)
     }

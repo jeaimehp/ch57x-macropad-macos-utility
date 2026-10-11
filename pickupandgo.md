@@ -3,6 +3,16 @@
 > Purpose: any AI model can resume this project from this file alone.
 > Newest entry at the top. Keep updated after every meaningful step.
 
+## STATE 2026-10-10 (night) — ⌨️ APP-LAUNCH KEYS (F13–F20) via MicroPad Menu
+
+- New doc line `# @app <f13..f20> <bundle-id|app name>` → `PadMapping.apps`. MicroPad Menu (`AppHotKeys`,
+  Carbon RegisterEventHotKey, no TCC needed) registers ONLY the on-pad config's @app keys (matched by
+  PadState digest; refreshed every 3 s) and opens/focuses the app (NSWorkspace openApplication, activates).
+- Muse template: b1-1 = `f13` (Open Muse; Muse = /Applications/Muse.app, bundle `com.meta.endo`);
+  Dictate = `{delay(250)}f13,ctrl,ctrl` (focus Muse, then double-Control dictation). Untested on hardware:
+  250 ms gaps may be too slow for macOS to see a "double" Control press, or too fast for a cold Muse launch.
+- Hotkeys only work while MicroPad Menu runs and the pad state is known (flashed via Studio/Menu).
+
 ## STATE 2026-10-10 (late) — 🧭 MENU BAR HELPER + 🖨 PRINTABLE LABELS
 
 - **MicroPad Menu.app** (target `MicroPadMenu`, LSUIElement, bundle `com.micropadstudio.menu`): MenuBarExtra

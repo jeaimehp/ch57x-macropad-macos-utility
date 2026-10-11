@@ -32,6 +32,9 @@ struct MenuContent: View {
         } else {
             Text("On pad: unknown (not flashed from MicroPad yet)")
         }
+        ForEach(model.activeHotKeys.keys.sorted(), id: \.self) { key in
+            Text("\(key.uppercased()) → open \(AppHotKeys.displayName(model.activeHotKeys[key]!))")
+        }
         if let name = model.flashing {
             Text("⏳ Flashing “\(name)”… don't unplug the pad")
         } else if let msg = model.lastMessage {

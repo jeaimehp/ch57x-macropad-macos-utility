@@ -16,6 +16,10 @@ public struct PadMapping: Codable, Equatable {
     public var title: String?
     public var summary: String?
     public var notes: [String: SlotNote] = [:]
+    /// `# @app <key> <bundle-id or app name>`: when this config is on the pad, the
+    /// MicroPad Menu helper opens / focuses that app whenever the pad sends <key>
+    /// (spare function keys f13–f20, which nothing else uses).
+    public var apps: [String: String] = [:]
 
     public enum Orientation: String, Codable, CaseIterable, Identifiable {
         case normal, upsidedown, clockwise, counterclockwise
