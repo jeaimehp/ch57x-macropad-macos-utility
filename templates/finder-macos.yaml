@@ -1,0 +1,37 @@
+# @title Finder & System (macOS)
+# @summary Mac system controls from the Finder — lock, mute, Focus, Terminal-here, window screenshot and a volume knob. Focus and Terminal-here use ⌃⌥⌘F / ⌃⌥⌘T, which you bind once in System Settings (or run scripts/setup_finder_shortcuts.sh).
+# @note b1-1 Lock Screen | ⌃⌘Q locks the Mac immediately (system shortcut).
+# @note b1-2 Mute Sound | Mute key toggles system audio on/off.
+# @note b1-3 Focus On/Off | ⌃⌥⌘F toggles Do Not Disturb. One-time setup: System Settings → Keyboard → Keyboard Shortcuts → Mission Control → "Turn Do Not Disturb On/Off" = ⌃⌥⌘F.
+# @note b2-1 Terminal Here | ⌘↑ selects the current folder in its parent, then ⌃⌥⌘T runs the "New Terminal at Folder" service. The Finder window ends up one level up. One-time setup: Keyboard Shortcuts → Services → Files and Folders → "New Terminal at Folder" = ⌃⌥⌘T.
+# @note b2-2 Screenshot Window | ⌘⇧4 then Space switches to window capture — click a window to save it to the Desktop.
+# @note b2-3 Show Hidden Files | ⌘⇧. shows or hides hidden (dot) files in Finder.
+# @note knob-ccw Volume Down | Lowers system volume.
+# @note knob-press Play / Pause | Plays or pauses the current media.
+# @note knob-cw Volume Up | Raises system volume.
+#
+# Finder & System (macOS) — 3x2 + 1 knob template
+#
+#   ┌──────────────┬──────────────┬──────────────┐
+#   │ ⌃⌘Q          │ Mute         │ ⌃⌥⌘F *       │   knob CCW   = volume down
+#   │ lock screen  │ mute sound   │ focus on/off │   knob press = play / pause
+#   ├──────────────┼──────────────┼──────────────┤   knob CW    = volume up
+#   │ ⌘↑ ⌃⌥⌘T *    │ ⌘⇧4 Space    │ ⌘⇧.          │
+#   │ terminal here│ screenshot   │ hidden files │
+#   └──────────────┴──────────────┴──────────────┘
+#   * needs a one-time shortcut binding (see notes above / setup script)
+
+model: ch57x-2
+orientation: normal
+rows: 2
+columns: 3
+knobs: 1
+
+layers:
+  - buttons:
+      - ["ctrl-cmd-q", "mute", "ctrl-alt-cmd-f"]
+      - ["{delay(200)}cmd-up,ctrl-alt-cmd-t", "{delay(200)}cmd-shift-4,space", "cmd-shift-dot"]
+    knobs:
+      - ccw: "volumedown"
+        press: "play"
+        cw: "volumeup"
