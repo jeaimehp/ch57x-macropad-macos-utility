@@ -372,12 +372,15 @@ final class MappingStore: ObservableObject {
         isBusy = true
         lastResult = "⏳ Uploading to pad — do not unplug…"
         let yaml = yamlText
+        let padName = activeConfigName ?? mapping.title ?? "Editor (unsaved)"
+        let padSource = activeConfigName != nil ? "library" : "editor"
         Task.detached(priority: .userInitiated) {
             let result: Result<String, Error>
             do {
                 let tool = Ch57xTool()
                 try tool.validate(yaml)   // never upload invalid config
                 try tool.upload(yaml)
+                PadState.record(name: padName, source: padSource, yaml: yaml)
                 result = .success("✅ Uploaded to pad.")
             } catch { result = .failure(error) }
             await MainActor.run {

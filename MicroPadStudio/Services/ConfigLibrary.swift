@@ -5,8 +5,13 @@ import Foundation
 struct ConfigLibrary {
     let dir: URL
 
+    /// `~/Library/Application Support/MicroPadStudio/configs`, shared by Studio and the
+    /// menu helper. MICROPAD_SUPPORT_DIR (tests only) relocates the whole support dir.
     static func defaultDir() -> URL {
-        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        if let override = ProcessInfo.processInfo.environment["MICROPAD_SUPPORT_DIR"] {
+            return URL(fileURLWithPath: override).appendingPathComponent("configs", isDirectory: true)
+        }
+        return FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("MicroPadStudio/configs", isDirectory: true)
     }
 

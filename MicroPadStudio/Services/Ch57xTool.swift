@@ -9,6 +9,7 @@ struct Ch57xTool {
         case launchFailed(String)
         case failed(exit: Int32, output: String)
         case timedOut(String, seconds: Int)
+        case busy
 
         var errorDescription: String? {
             switch self {
@@ -19,13 +20,19 @@ struct Ch57xTool {
                 return "Tool exited with \(code):\n\(output)"
             case .timedOut(let what, let secs):
                 return "\(what) timed out after \(secs)s. If this was an upload, the pad's USB interface may be wedged — unplug the pad, wait 2 s, replug, retry."
+            case .busy:
+                return "Another upload is already in progress (MicroPad Studio or MicroPad Menu). Wait for it to finish."
             }
         }
     }
 
-    /// Candidate lookup order: bundled resource, dev checkout, PATH-installed.
+    /// Candidate lookup order: MICROPAD_TOOL_PATH (tests only — lets selftests run a
+    /// fake tool instead of flashing the real pad), bundled resource, ~/.local/bin.
     static func binaryURL() -> URL? {
         var candidates: [URL] = []
+        if let override = ProcessInfo.processInfo.environment["MICROPAD_TOOL_PATH"] {
+            candidates.append(URL(fileURLWithPath: override))
+        }
         if let res = Bundle.main.resourceURL?.appendingPathComponent("ch57x-keyboard-tool") {
             candidates.append(res)
         }
@@ -81,9 +88,21 @@ struct Ch57xTool {
     }
 
     /// Uploads mapping to the connected pad. DESTRUCTIVE on-device.
+    /// Serialised across processes with an flock so Studio and the menu helper can
+    /// never drive the USB write at the same time.
     func upload(_ yaml: String) throws {
-        let (output, code) = try run(subcommand: "upload", stdin: yaml, timeout: 90)
+        let fd = open(Self.lockURL().path, O_CREAT | O_RDWR, 0o644)
+        guard fd >= 0 else { throw ToolError.launchFailed("cannot open upload lock") }
+        defer { close(fd) }   // closing releases the lock
+        guard flock(fd, LOCK_EX | LOCK_NB) == 0 else { throw ToolError.busy }
+        let (output, code) = try run(subcommand: "upload", stdin: yaml, timeout: 120)
         if code != 0 { throw ToolError.failed(exit: code, output: output.trimmingCharacters(in: .whitespacesAndNewlines)) }
+    }
+
+    static func lockURL() -> URL {
+        let dir = ConfigLibrary.defaultDir().deletingLastPathComponent()
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir.appendingPathComponent("upload.lock")
     }
 
     /// Raw output of show-keys (for the M2 action picker).
