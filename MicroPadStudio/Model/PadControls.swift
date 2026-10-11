@@ -58,8 +58,9 @@ enum PadControls {
     }
 }
 
-/// Firmware limits the CLI's `validate` does not enforce (upstream doc/actions.md:
-/// "Up to five combinations may be used" per key sequence).
+/// Firmware limits the CLI's `validate` does not enforce: at most five accords per
+/// sequence (upstream doc/actions.md), and no `{delay(...)}` options on this model
+/// (the upload fails with "delay feature is not supported by this keyboard model").
 enum MappingLint {
     static let maxAccords = 5
 
@@ -83,6 +84,9 @@ enum MappingLint {
         for li in m.layers.indices {
             let prefix = m.layers.count > 1 ? "Layer \(li + 1), " : ""
             for c in PadControls.list(m, layer: li) {
+                if c.action.trimmingCharacters(in: .whitespaces).hasPrefix("{") {
+                    out.append("\(prefix)\(c.position): \"\(c.action)\" uses {options} like delay(), which this pad model doesn't support.")
+                }
                 let n = accordCount(c.action)
                 if n > maxAccords {
                     out.append("\(prefix)\(c.position): \"\(c.action)\" is \(n) keystrokes — the pad plays at most \(maxAccords).")

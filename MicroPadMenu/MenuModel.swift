@@ -34,6 +34,7 @@ final class MenuModel: ObservableObject {
     private var deviceSink: AnyCancellable?
 
     init() {
+        defer { hotKeys.onFire = { [weak self] msg in if msg.hasPrefix("⚠️") { self?.lastMessage = msg } } }
         askBeforeFlashing = UserDefaults.standard.object(forKey: Self.askKey) as? Bool ?? true
         templates = TemplateLibrary.load().map {
             Item(id: "template:\($0.id)", name: $0.name, source: "template", mapping: $0.mapping)

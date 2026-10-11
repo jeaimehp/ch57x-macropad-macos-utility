@@ -8,9 +8,15 @@
 - New doc line `# @app <f13..f20> <bundle-id|app name>` → `PadMapping.apps`. MicroPad Menu (`AppHotKeys`,
   Carbon RegisterEventHotKey, no TCC needed) registers ONLY the on-pad config's @app keys (matched by
   PadState digest; refreshed every 3 s) and opens/focuses the app (NSWorkspace openApplication, activates).
-- Muse template: b1-1 = `f13` (Open Muse; Muse = /Applications/Muse.app, bundle `com.meta.endo`);
-  Dictate = `{delay(250)}f13,ctrl,ctrl` (focus Muse, then double-Control dictation). Untested on hardware:
-  250 ms gaps may be too slow for macOS to see a "double" Control press, or too fast for a cold Muse launch.
+- ⚠️ **This pad model rejects `{delay(...)}`** ("delay feature is not supported by this keyboard model") — CLI
+  validate accepts it, upload fails mid-way (keys written one by one → pad may be half-flashed). MappingLint
+  now refuses `{…}` options; Finder template delays removed.
+- Muse template: b1-1 = `f13` (Open Muse, bundle `com.meta.endo`); Dictate = `f14` with `# @app f14 com.meta.endo +dictate`
+  → helper opens/focuses Muse, waits until frontmost (≤8 s), then posts Control×2 via CGEvent (flagsChanged).
+  Needs **Accessibility** for MicroPad Menu (prompts on first Dictate press).
+- **Pad flashed 2026-10-11 03:06Z with Meta Muse (macOS)** via `MicroPad Menu --flash meta-muse-macos` (exit 0,
+  76 s); helper menu showed "F13 → open Muse, F14 → open Muse + dictate". Key presses not yet tried by user.
+- `MicroPad Menu --flash <template id|name|saved name>`: headless flash (validate → upload → PadState).
 - Hotkeys only work while MicroPad Menu runs and the pad state is known (flashed via Studio/Menu).
 
 ## STATE 2026-10-10 (late) — 🧭 MENU BAR HELPER + 🖨 PRINTABLE LABELS

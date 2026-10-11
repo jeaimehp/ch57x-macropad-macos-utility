@@ -164,6 +164,9 @@ struct MicroPadStudioApp: App {
             for (a, want) in accords where MappingLint.accordCount(a) != want {
                 print("SELFTEST FAIL accordCount '\(a)' → \(MappingLint.accordCount(a)) (want \(want))"); exit(2)
             }
+            var delayed = parsed
+            delayed.layers[0].buttons[0][0] = "{delay(100)}a,b"
+            guard MappingLint.problems(delayed).count == 1 else { print("SELFTEST FAIL lint missed {delay}"); exit(2) }
             var tooLong = parsed
             tooLong.layers[0].buttons[0][0] = "g,i,t,space,s,t,enter"
             guard MappingLint.problems(tooLong).count == 1, MappingLint.problems(parsed).isEmpty else {

@@ -50,6 +50,9 @@ enum MenuSelftest {
         // App hotkeys: lookup by bundle id / name, register + unregister (never fired here).
         guard AppHotKeys.appURL("com.apple.finder") != nil, AppHotKeys.appURL("Calculator") != nil,
               AppHotKeys.appURL("no.such.app.xyz") == nil else { fail("appURL lookup") }
+        let parsed = AppHotKeys.parse("com.meta.endo +dictate")
+        guard parsed.app == "com.meta.endo", parsed.actions == ["dictate"],
+              AppHotKeys.parse("Muse").actions.isEmpty else { fail("@app spec parse") }
         let hk = AppHotKeys()
         guard hk.update(["f19": "com.apple.finder", "f99": "ignored"]) == 1 else { fail("hotkey register") }
         guard hk.update([:]) == 0 else { fail("hotkey unregister") }

@@ -7,7 +7,9 @@ struct MicroPadMenuApp: App {
     @StateObject private var model: MenuModel
 
     init() {
-        if CommandLine.arguments.contains("--selftest") { MenuSelftest.run() }   // exits
+        let args = CommandLine.arguments
+        if args.contains("--selftest") { MenuSelftest.run() }   // exits
+        if let i = args.firstIndex(of: "--flash"), i + 1 < args.count { MenuCLI.flash(args[i + 1]) }   // exits
         _model = StateObject(wrappedValue: MenuModel())
     }
 
