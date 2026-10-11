@@ -1,7 +1,7 @@
 # @title Meta Muse (macOS)
 # @summary Meta's Muse AI assistant on a Mac — open it, talk to it, hear replies, share screenshots. Open Muse (F13) and Dictate (F14) are handled by the MicroPad Menu helper, which opens/focuses Muse first. Dictate and Read Response use built-in macOS speech features; Stop is a common chat-app convention, unverified for Muse.
 # @note b1-1 Open Muse | Opens Muse, or brings its window to the front if it's already running (F13 — handled by the MicroPad Menu helper, which must be running).
-# @note b1-2 Dictate to Chat | Brings Muse to the front (opening it if needed), waits until it's ready, then starts macOS Dictation in its chat box — speak, then press Esc. F14 — handled by MicroPad Menu (needs Accessibility once). One-time setup: System Settings → Keyboard → Dictation → On, Shortcut = "Press Control Key Twice".
+# @note b1-2 Hold to Dictate | Hold to talk: brings Muse to the front (opening it if needed) and starts macOS Dictation in its chat box; release to stop. A quick tap keeps dictating until you tap again. F14 — handled by MicroPad Menu (needs Accessibility once).
 # @note b1-3 Read Response | Select Muse's reply, press to have your Mac read it aloud; press again to stop. One-time setup: System Settings → Accessibility → Spoken Content → "Speak selection" On (shortcut ⌥Esc).
 # @note b2-1 Screenshot → clipboard | ⌃⌘⇧4 lets you drag a screen area to the clipboard — then press the knob to paste it into Muse.
 # @note b2-2 Stop | Esc usually stops a reply in progress (unverified for Muse).

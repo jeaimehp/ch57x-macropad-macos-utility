@@ -20,17 +20,19 @@ final class AppHotKeys {
     var onFire: ((String) -> Void)?                      // reports the app name opened
 
     init() {
-        var spec = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
+        var specs = [EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed)),
+                     EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyReleased))]
         InstallEventHandler(GetApplicationEventTarget(), { _, event, userData in
             var hk = EventHotKeyID()
             GetEventParameter(event, EventParamName(kEventParamDirectObject), EventParamType(typeEventHotKeyID),
                               nil, MemoryLayout<EventHotKeyID>.size, nil, &hk)
-            guard let userData else { return noErr }
+            guard let event, let userData else { return noErr }
             let me = Unmanaged<AppHotKeys>.fromOpaque(userData).takeUnretainedValue()
             let id = hk.id
-            DispatchQueue.main.async { MainActor.assumeIsolated { me.fire(id) } }
+            let pressed = GetEventKind(event) == UInt32(kEventHotKeyPressed)
+            DispatchQueue.main.async { MainActor.assumeIsolated { me.fire(id, pressed: pressed) } }
             return noErr
-        }, 1, &spec, Unmanaged.passUnretained(self).toOpaque(), &handler)
+        }, 2, &specs, Unmanaged.passUnretained(self).toOpaque(), &handler)
     }
 
     /// Re-registers only when the requested set changes. Returns how many keys are live.
@@ -54,42 +56,91 @@ final class AppHotKeys {
         return refs.count
     }
 
-    private func fire(_ id: UInt32) {
+    // MARK: - Firing
+
+    /// Hold-to-talk state for "+dictate" keys.
+    private enum Dictation { case idle, starting, active }
+    private var dictation = Dictation.idle
+    private var pressedAt = Date.distantPast
+    private var latched = false          // quick tap → keep dictating until the next tap
+    private var stopWhenStarted = false  // released before dictation finished starting
+    private var dictationPID: pid_t = 0
+    static let tapThreshold: TimeInterval = 0.35
+
+    private func fire(_ id: UInt32, pressed: Bool) {
         guard let spec = specByID[id] else { return }
         let (app, actions) = Self.parse(spec)
         guard let url = Self.appURL(app) else { return }
+        if actions.contains("dictate") {
+            pressed ? dictatePressed(url) : dictateReleased()
+            return
+        }
+        guard pressed else { return }
+        activate(url)
+    }
+
+    private func activate(_ url: URL) {
         let config = NSWorkspace.OpenConfiguration()
         config.activates = true
         NSWorkspace.shared.openApplication(at: url, configuration: config)   // launches or focuses
         onFire?(url.deletingPathExtension().lastPathComponent)
-        if actions.contains("dictate") { startDictation(in: url) }
     }
 
-    /// "+dictate": once `url`'s app is frontmost (waits through a cold launch, max 8 s),
-    /// start macOS Dictation — via the app's Edit → Start Dictation… menu item, else the
-    /// "Press Control Key Twice" shortcut. Both need Accessibility; prompts the first time.
-    private func startDictation(in url: URL) {
+    /// Press: a latched (tap-started) dictation stops; otherwise focus the app and start.
+    private func dictatePressed(_ url: URL) {
+        if dictation == .active && latched { stopDictation(); return }
+        guard dictation == .idle else { return }
         let opts = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
         guard AXIsProcessTrustedWithOptions(opts) else {
             onFire?("⚠️ allow MicroPad Menu in System Settings → Privacy & Security → Accessibility, then press Dictate again")
             return
         }
+        pressedAt = Date(); latched = false; stopWhenStarted = false
+        dictation = .starting
+        activate(url)
         Task { @MainActor in
+            // Wait for the app to be frontmost (covers a cold launch), max 8 s.
             let deadline = Date().addingTimeInterval(8)
             while NSWorkspace.shared.frontmostApplication?.bundleURL?.standardizedFileURL != url.standardizedFileURL {
-                if Date() > deadline { return }
+                if Date() > deadline { self.dictation = .idle; return }
                 try? await Task.sleep(nanoseconds: 50_000_000)
             }
             try? await Task.sleep(nanoseconds: 300_000_000)   // let its window take key focus
-            let pid = NSWorkspace.shared.frontmostApplication?.processIdentifier ?? 0
+            self.dictationPID = NSWorkspace.shared.frontmostApplication?.processIdentifier ?? 0
             // Prefer the app's own Edit → Start Dictation… (works whatever the Dictation
-            // shortcut is set to); fall back to the "Press Control Key Twice" shortcut.
-            if !Self.pressStartDictationMenuItem(pid: pid) { Self.doubleTapControl() }
+            // shortcut is); fall back to the "Press Control Key Twice" shortcut.
+            if !Self.pressMenuItem(prefix: "Start Dictation", pid: self.dictationPID) { Self.doubleTapControl() }
+            self.dictation = .active
+            if self.stopWhenStarted { self.stopDictation() }
         }
     }
 
-    /// Finds "Start Dictation…" in the app's menu bar via Accessibility and presses it.
-    static func pressStartDictationMenuItem(pid: pid_t) -> Bool {
+    /// Release: a quick tap latches dictation on; a hold stops it (push-to-talk).
+    private func dictateReleased() {
+        let held = Date().timeIntervalSince(pressedAt)
+        switch dictation {
+        case .idle:
+            return
+        case .starting:
+            if held < Self.tapThreshold { latched = true } else { stopWhenStarted = true }
+        case .active:
+            if latched { return }                       // the stop happens on the next press
+            if held < Self.tapThreshold { latched = true } else { stopDictation() }
+        }
+    }
+
+    private func stopDictation() {
+        let pid = dictationPID
+        dictation = .idle; latched = false; stopWhenStarted = false
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 150_000_000)   // let the last words land
+            if !Self.pressMenuItem(prefix: "Stop Dictation", pid: pid) { Self.doubleTapControl() }
+        }
+    }
+
+    /// Finds a menu item whose title starts with `prefix` (e.g. "Start Dictation") in the
+    /// app's menu bar via Accessibility and presses it.
+    static func pressMenuItem(prefix: String, pid: pid_t) -> Bool {
         guard pid > 0 else { return false }
         let app = AXUIElementCreateApplication(pid)
         func children(_ e: AXUIElement) -> [AXUIElement] {
@@ -107,7 +158,7 @@ final class AppHotKeys {
               let menuBar = bar else { return false }
         for top in children(menuBar as! AXUIElement) {          // Apple, App, Edit, …
             for menu in children(top) {
-                for item in children(menu) where title(item).hasPrefix("Start Dictation") {
+                for item in children(menu) where title(item).hasPrefix(prefix) {
                     return AXUIElementPerformAction(item, kAXPressAction as CFString) == .success
                 }
             }
