@@ -1,5 +1,52 @@
 # pickupandgo.md — Handoff Log
 
+## STATE 2026-10-10 — 🐛 USER-REPORTED BUGS FIXED (UI clipping + upload freeze) — dist rebuilt, needs eyes-on + hardware test
+
+User tested the M6 dist build and found two real bugs. Both fixed, with a headless
+regression test that proves the fix:
+
+1. **Pad grid pushed off-screen when a key is selected** ("shows 2x2, mapping.yml
+   pushed keys out of frame"). Root cause (measured, not guessed): the Action
+   inspector's 5-segment **segmented Category picker is non-shrinkable (~405pt)**
+   and appears only when a key is selected, raising the HStack min width from
+   ~978 to >980 → whole layout overflows, grid clips off the left edge.
+   - Fix: `ViewThatFits` in `ActionInspectorView` (segmented only when it fits,
+     compact `.menu` picker otherwise) + `lineLimit`/truncation on the header rows
+     + `fixedSize(horizontal:false)` on the help caption.
+2. **Validate/Upload froze the UI** (upload could hang forever with a wedged pad).
+   - Fix: `Ch57xTool` is now a stateless struct with hard timeouts (validate/show-keys
+     15s, upload 90s; SIGTERM→SIGKILL escalation, actionable "replug the pad" message);
+     `MappingStore.validate()/upload()` run on `Task.detached` and hop back to MainActor.
+     `upload()` now also stops the Live Test monitor first (our IOHIDManager listen can
+     stall the vendor write).
+
+**New headless test**: `MicroPadStudio --layout-test [--select-key]` — hosts the real
+ContentView in an offscreen NSHostingView at 980×540, walks the NSView tree, fails if
+any view frame leaves the window. Verified: old code FAILS with `--select-key`
+(widest offender: `SystemSegmentedControl` at x=613…1018 > 980); fixed code PASSES
+both states. Keep this pattern for future layout regressions.
+
+Diagnostics learned the hard way:
+- `osascript … count of windows` can report **0** for the app while the display sleeps
+  / on the secondary display, even though `CGWindowListCopyWindowInfo` shows the
+  windows with real bounds. Use `scripts/winlist.swift`-style CG queries for truth.
+- Selftest flag is `--selftest <yaml>` (the `MICROPADSTUDIO_*` env var is only a
+  launched-marker; running the binary without the flag just starts the GUI).
+- `screencapture -R` fails ("could not create image from rect") while displays are
+  asleep — wake the display before visual verification.
+
+Dist rebuilt (adhoc-signed, arm64): `dist/MicroPadStudio.app` + `.zip`; release binary
+passes `--selftest` and both `--layout-test` states.
+
+### NEXT (in order)
+1. User eyes-on: open `dist/MicroPadStudio.app`, click keys at min window size —
+   grid must stay fully visible; Validate should show ⏳ without freezing.
+2. Hardware (still untested on real pad): Live Test panel highlight, then FIRST
+   upload of `mapping.yaml` (commit any mapping change before uploading!).
+3. If pad firmware rejects ch57x-2/2x3 shape → adjust mapping.yaml, re-validate, upload.
+
+
+
 > Purpose: any AI model can resume this project from this file alone.
 > Newest entry at the top. Keep updated after every meaningful step.
 

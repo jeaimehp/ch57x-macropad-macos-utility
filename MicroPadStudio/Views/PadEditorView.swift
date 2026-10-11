@@ -43,7 +43,8 @@ struct PadEditorView: View {
         let selected = store.selection == slot
         let pressed = store.isSlotPressed(slot)
         Button {
-            store.selection = slot
+            // Re-clicking the selected key deselects (escape hatch back to the plain pad view).
+            store.selection = (store.selection == slot) ? nil : slot
         } label: {
             VStack(spacing: 3) {
                 Text("\(row + 1)·\(col + 1)")
@@ -87,7 +88,7 @@ struct PadEditorView: View {
         let selected = store.selection == slot
         let pressed = store.isSlotPressed(slot)
         Button {
-            store.selection = slot
+            store.selection = (store.selection == slot) ? nil : slot
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: symbol).font(.system(size: 10))

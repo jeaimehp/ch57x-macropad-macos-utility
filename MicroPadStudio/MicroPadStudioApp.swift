@@ -9,6 +9,9 @@ struct MicroPadStudioApp: App {
         if args.contains("--selftest") {
             Self.runSelftest(args: args)   // exits process
         }
+        if args.contains("--layout-test") {
+            Self.runLayoutTest(args: args) // exits process
+        }
         FileHandle.standardOutput.write(Data("MICROPADSTUDIO_LAUNCHED pid=\(ProcessInfo.processInfo.processIdentifier)\n".utf8))
     }
 
@@ -125,5 +128,42 @@ struct MicroPadStudioApp: App {
             print("SELFTEST FAIL: \(error.localizedDescription)")
             exit(1)
         }
+    }
+
+    /// Headless layout-overflow check: host the real ContentView in an offscreen
+    /// NSHostingView at the minimum window size (980×540), force layout, then walk
+    /// the NSView tree for any view whose frame spills outside the host bounds.
+    /// `--select-key` pre-selects a pad key, reproducing the "inspector opens and
+    /// the pad grid gets pushed off-screen" bug.
+    static func runLayoutTest(args: [String]) -> Never {
+        _ = NSApplication.shared
+        let w: CGFloat = 980, h: CGFloat = 540
+        let host = NSHostingView(rootView: ContentView().frame(width: w, height: h, alignment: .topLeading))
+        host.frame = NSRect(x: 0, y: 0, width: w, height: h)
+        host.layoutSubtreeIfNeeded()
+        host.layoutSubtreeIfNeeded()   // second pass resolves min/ideal constraints
+
+        var overflowCount = 0
+        var widestBad: (name: String, rect: NSRect)?
+        func walk(_ v: NSView) {
+            let r = v.convert(v.bounds, to: host)
+            if !r.isNull, r.width > 1, r.height > 1,
+               r.minX < -1 || r.maxX > w + 1 || r.minY < -1 || r.maxY > h + 1 {
+                overflowCount += 1
+                if widestBad == nil || r.width > widestBad!.rect.width {
+                    widestBad = (String(describing: type(of: v)), r)
+                }
+            }
+            for s in v.subviews { walk(s) }
+        }
+        walk(host)
+
+        let sel = args.contains("--select-key")
+        if let bad = widestBad {
+            print("LAYOUT FAIL selection=\(sel): \(overflowCount) view(s) out of bounds; widest: \(bad.name) x=\(bad.rect.minX) maxX=\(bad.rect.maxX) y=\(bad.rect.minY) maxY=\(bad.rect.maxY)")
+            exit(1)
+        }
+        print("LAYOUT OK selection=\(sel): all views within \(Int(w))x\(Int(h))")
+        exit(0)
     }
 }

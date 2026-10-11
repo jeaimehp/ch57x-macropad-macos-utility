@@ -19,12 +19,22 @@ struct YAMLDocument: FileDocument {
 
 /// M1 shell: device status + validate/upload + YAML preview. Editor lands in M2.
 struct ContentView: View {
-    @StateObject private var store = MappingStore()
+    @StateObject private var store: MappingStore
     @State private var confirmUpload = false
     @State private var showLibrary = false
     @State private var showImporter = false
     @State private var showExporter = false
     @State private var exportDoc: YAMLDocument?
+
+    init() {
+        // Test hook (--layout-test --select-key): open the app with a key already
+        // selected so the headless layout test can measure the inspector-open state.
+        _store = StateObject(wrappedValue: {
+            let s = MappingStore()
+            if CommandLine.arguments.contains("--select-key") { s.selection = .button(row: 0, col: 0) }
+            return s
+        }())
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -65,12 +75,15 @@ struct ContentView: View {
             Divider()
 
             HStack(spacing: 0) {
-                // Visual pad editor (M2)
+                // Visual pad editor (M2). Hard floor: grid (3×96+spacings) + knob (150)
+                // + paddings must never be compressed — layoutPriority keeps the pad
+                // on-screen when the inspector/yaml columns compete for width.
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Editor").font(.headline)
                     PadEditorView(store: store)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(minWidth: 500, maxWidth: .infinity, alignment: .leading)
+                .layoutPriority(2)
                 .padding()
 
                 Divider()
@@ -81,7 +94,8 @@ struct ContentView: View {
                     ActionInspectorView(store: store)
                         .id(store.selection.map { "\($0)" })  // reset filter/custom per selection
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(minWidth: 230, maxWidth: .infinity, alignment: .leading)
+                .layoutPriority(1)
                 .padding()
 
                 Divider()
@@ -98,13 +112,14 @@ struct ContentView: View {
                     }
                     .labelsHidden()
                     .fixedSize()
-                    ScrollView {
+                    ScrollView(.horizontal) {
                         Text(store.yamlText)
                             .font(.system(.caption, design: .monospaced))
+                            .fixedSize(horizontal: false, vertical: true)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(minWidth: 150, maxWidth: .infinity, alignment: .leading)
                 .padding()
             }
 
@@ -146,14 +161,15 @@ struct ContentView: View {
      exportDoc = nil
  }
  .onDrop(of: [UTType.fileURL], isTargeted: nil) { providers in
-     guard let provider = providers.first else { return false }
-     _ = provider.loadObject(ofClass: URL.self) { url, _ in
-         guard let url, ["yaml", "yml"].contains(url.pathExtension.lowercased()) else { return }
-         DispatchQueue.main.async { store.importConfig(from: url) }
-     }
-     return true
- }
- }
+    guard let provider = providers.first else { return false }
+    _ = provider.loadObject(ofClass: URL.self) { url, _ in
+        guard let url, ["yaml", "yml"].contains(url.pathExtension.lowercased()) else { return }
+        DispatchQueue.main.async { store.importConfig(from: url) }
+    }
+    return true
+}
+.onExitCommand { store.selection = nil }   // Esc closes the inspector / restores plain pad view
+}
 
     private func hex(_ v: UInt16?) -> String {
         guard let v else { return "??" }

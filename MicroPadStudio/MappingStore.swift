@@ -18,7 +18,6 @@ final class MappingStore: ObservableObject {
     @Published var selection: Slot?
 
     let device = DeviceMonitor()
-    private let tool = Ch57xTool()
     @Published private(set) var yamlText: String
 
     // MARK: Live test (M3)
@@ -305,23 +304,47 @@ final class MappingStore: ObservableObject {
     }
 
     func validate() {
-        isBusy = true; defer { isBusy = false }
-        do {
-            try tool.validate(yamlText)
-            lastResult = "✅ Config is valid."
-        } catch {
-            lastResult = "❌ \(error.localizedDescription)"
+        guard !isBusy else { return }
+        isBusy = true
+        lastResult = "⏳ validating…"
+        let yaml = yamlText
+        Task.detached(priority: .userInitiated) {
+            let result: Result<String, Error>
+            do { try Ch57xTool().validate(yaml); result = .success("✅ Config is valid.") }
+            catch { result = .failure(error) }
+            await MainActor.run {
+                self.isBusy = false
+                switch result {
+                case .success(let msg): self.lastResult = msg
+                case .failure(let e):   self.lastResult = "❌ \(e.localizedDescription)"
+                }
+            }
         }
     }
 
     func upload() {
-        isBusy = true; defer { isBusy = false }
-        do {
-            try tool.validate(yamlText)   // never upload invalid config
-            try tool.upload(yamlText)
-            lastResult = "✅ Uploaded to pad."
-        } catch {
-            lastResult = "❌ \(error.localizedDescription)"
+        guard !isBusy else { return }
+        // Release our own IOHIDManager listen before the vendor write: a held
+        // interface can stall the upload (documented tool pitfall).
+        if liveOn { setLive(on: false) }
+        isBusy = true
+        lastResult = "⏳ Uploading to pad — do not unplug…"
+        let yaml = yamlText
+        Task.detached(priority: .userInitiated) {
+            let result: Result<String, Error>
+            do {
+                let tool = Ch57xTool()
+                try tool.validate(yaml)   // never upload invalid config
+                try tool.upload(yaml)
+                result = .success("✅ Uploaded to pad.")
+            } catch { result = .failure(error) }
+            await MainActor.run {
+                self.isBusy = false
+                switch result {
+                case .success(let msg): self.lastResult = msg
+                case .failure(let e):   self.lastResult = "❌ \(e.localizedDescription)"
+                }
+            }
         }
     }
 }

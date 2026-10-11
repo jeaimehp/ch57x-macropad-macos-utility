@@ -19,20 +19,32 @@ struct ActionInspectorView: View {
             if let slot = store.selection {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(store.slotLabel(slot)).font(.headline)
+                        Text(store.slotLabel(slot)).font(.headline).lineLimit(1)
                         Text("current: \(store.action(for: slot))")
                             .font(.system(.caption, design: .monospaced))
                             .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
                     }
-                    Spacer()
+                    Spacer(minLength: 4)
                     Button("Done") { store.selection = nil }
+                        .fixedSize()
                 }
 
-                Picker("Category", selection: $category) {
-                    ForEach(ActionCategory.allCases) { Text($0.label).tag($0) }
+                // Segmented pickers NEVER shrink below their intrinsic width (~380pt for
+                // 5 segments) and clip the whole window when selected. ViewThatFits keeps
+                // the segmented look only when it actually fits; otherwise compact menu.
+                ViewThatFits(in: .horizontal) {
+                    Picker("Category", selection: $category) {
+                        ForEach(ActionCategory.allCases) { Text($0.label).tag($0) }
+                    }
+                    .pickerStyle(.segmented)
+                    Picker("Category", selection: $category) {
+                        ForEach(ActionCategory.allCases) { Text($0.label).tag($0) }
+                    }
+                    .pickerStyle(.menu)
+                    .fixedSize()
                 }
-                .pickerStyle(.segmented)
-                .fixedSize()
 
                 TextField("Filter…", text: $search)
                     .textFieldStyle(.roundedBorder)
@@ -60,6 +72,7 @@ struct ActionInspectorView: View {
                 Text("Combos: ctrl-c · Sequences: h,i · Mouse: click(left), move(10,0) · Raw: <101>")
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
+                    .fixedSize(horizontal: false, vertical: true)   // wrap, never widen the column
             } else {
                 VStack(spacing: 6) {
                     Image(systemName: "hand.tap").font(.title2).foregroundStyle(.secondary)
