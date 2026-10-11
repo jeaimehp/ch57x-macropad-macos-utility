@@ -60,13 +60,8 @@ struct FaceplateSheetView: View {
         .environment(\.colorScheme, .light)
     }
 
-    // MARK: - Colours (match the app icon + editor keycaps)
+    // MARK: - Colours (labels only — same palette as the app icon + editor keycaps)
 
-    /// Plate background: the icon's blue → purple → magenta sweep.
-    static let plateGradient = LinearGradient(
-        colors: [Color(red: 0.13, green: 0.40, blue: 0.98), Color(red: 0.42, green: 0.27, blue: 0.95),
-                 Color(red: 0.74, green: 0.24, blue: 0.86)],
-        startPoint: .topLeading, endPoint: .bottomTrailing)
     static let knobGlow = Color(red: 0.35, green: 0.70, blue: 1.0)
 
     private func keyColor(_ c: PadControl) -> Color {
@@ -82,22 +77,17 @@ struct FaceplateSheetView: View {
         let knobR = g.knobHoleDiameter / 2
         let plateShape = RoundedRectangle(cornerRadius: mm(g.plateCornerRadius))
         return ZStack(alignment: .topLeading) {
-            plateShape.fill(Self.plateGradient)
-            // Knob hole: white (cut away) with a glowing ring around it, clipped → notch at the edge.
+            plateShape.fill(Color.white)
+            // Knob hole, clipped to the plate so it reads as a notch at the edge.
             ZStack(alignment: .topLeading) {
-                Circle().stroke(Self.knobGlow, lineWidth: mm(1.4))
-                    .shadow(color: Self.knobGlow, radius: 3)
-                    .frame(width: mm(g.knobHoleDiameter + 1.6), height: mm(g.knobHoleDiameter + 1.6))
-                    .offset(x: mm(g.knobCenter.x - knobR - 0.8), y: mm(g.knobCenter.y - knobR - 0.8))
-                Circle().fill(Color.white)
-                    .overlay(Circle().stroke(style: cut))
+                Circle().stroke(style: cut)
                     .frame(width: mm(g.knobHoleDiameter), height: mm(g.knobHoleDiameter))
                     .offset(x: mm(g.knobCenter.x - knobR), y: mm(g.knobCenter.y - knobR))
             }
             .frame(width: mm(g.plate.width), height: mm(g.plate.height), alignment: .topLeading)
             .clipShape(plateShape)
             // Key window: white = cut away.
-            RoundedRectangle(cornerRadius: mm(1)).fill(Color.white)
+            RoundedRectangle(cornerRadius: mm(1)).fill(Color(white: 0.95))
                 .overlay(RoundedRectangle(cornerRadius: mm(1)).strokeBorder(style: cut))
                 .overlay(Text("cut out").font(.system(size: 7)).foregroundStyle(.gray))
                 .frame(width: mm(w.width), height: mm(w.height))
@@ -124,7 +114,6 @@ struct FaceplateSheetView: View {
         let knob = controls.filter { if case .knob = $0.kind { return true } else { return false } }
         func knobLabel(_ part: String) -> PadControl? { knob.first { $0.id.hasSuffix("knob-\(part)") } }
         return ZStack(alignment: .topLeading) {
-            Rectangle().fill(Self.plateGradient)
             ForEach(controls) { c in
                 if case .button(let row, let col) = c.kind, row == (top ? 0 : 1), col < g.columnCenters.count {
                     buttonLabel(c, compact: top)
@@ -196,7 +185,7 @@ struct FaceplateSheetView: View {
                 .overlay(Capsule().strokeBorder(Color.white.opacity(0.85), lineWidth: 0.5))
             if !compact {
                 text(c.keys, size: 4.5, weight: .semibold, lines: 1, mono: true)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.black)
             }
         }
     }
