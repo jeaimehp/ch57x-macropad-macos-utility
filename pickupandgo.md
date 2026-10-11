@@ -18,6 +18,8 @@
   Git (Terminal, oh-my-zsh aliases), iTerm2, Chrome, Notion, Evernote, iMovie, GIMP, Zoom (all macOS),
   Total Annihilation (Windows).
 - Docs: `README.md` (features + screenshots in `docs/screenshots/`), this file, `MILESTONES.md` (original plan).
+- **Remote:** public GitHub repo https://github.com/jeaimehp/ch57x-macropad-macos-utility (`origin`, branch `main`).
+  History was pushed as-is (user's choice) — early commits still contain ~90 MB of DerivedData build cache.
 
 ### What's on the pad right now
 - **Finder & System (macOS)** — flashed by the user from the apps at 2026-10-11 03:26Z
