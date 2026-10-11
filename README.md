@@ -161,7 +161,7 @@ Key names come from `ch57x-keyboard-tool show-keys` (`escape`, not `esc`); actio
 | `scripts/` | Packaging, signing, Finder shortcut setup, GUI-test helpers |
 | `project.yml` | XcodeGen spec (the `.xcodeproj` is generated and gitignored) |
 | `pickupandgo.md` / `MILESTONES.md` | Handoff log + original plan |
-| `LICENSE` | MIT (project) + note on the bundled tool's MIT license |
+| `LICENSE` / `NOTICE` | MIT license; third-party notice for the bundled tool |
 
 ## Building
 

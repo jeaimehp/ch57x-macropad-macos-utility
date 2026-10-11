@@ -1,0 +1,8 @@
+ch57x-macropad-macos-utility
+Copyright (c) 2026 jeaimehp — MIT License (see LICENSE)
+
+This repository bundles a third-party component:
+
+  vendor/ch57x-keyboard-tool — ch57x-keyboard-tool v1.7.0 by kriomant
+  https://github.com/kriomant/ch57x-keyboard-tool
+  Redistributed unmodified under its own MIT License (see vendor/NOTICE.txt).
