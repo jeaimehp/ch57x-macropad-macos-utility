@@ -56,6 +56,20 @@ final class AppHotKeys {
         return refs.count
     }
 
+    // MARK: - Diagnostics log (~/Library/Logs/MicroPad Menu.log)
+
+    static let logURL = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask)[0]
+        .appendingPathComponent("Logs/MicroPad Menu.log")
+
+    static func log(_ msg: String) {
+        let line = "\(ISO8601DateFormatter.string(from: Date(), timeZone: .current, formatOptions: [.withInternetDateTime, .withFractionalSeconds])) \(msg)\n"
+        if let h = try? FileHandle(forWritingTo: logURL) {
+            h.seekToEndOfFile(); h.write(Data(line.utf8)); try? h.close()
+        } else {
+            try? line.write(to: logURL, atomically: true, encoding: .utf8)
+        }
+    }
+
     // MARK: - Firing
 
     /// Hold-to-talk state for "+dictate" keys.
@@ -65,10 +79,13 @@ final class AppHotKeys {
     private var latched = false          // quick tap → keep dictating until the next tap
     private var stopWhenStarted = false  // released before dictation finished starting
     private var dictationPID: pid_t = 0
-    static let tapThreshold: TimeInterval = 0.35
+    static let tapThreshold: TimeInterval = 0.5
 
     private func fire(_ id: UInt32, pressed: Bool) {
         guard let spec = specByID[id] else { return }
+        let key = active.first { $0.value == spec }?.key.uppercased() ?? "?"
+        Self.log(pressed ? "\(key) pressed (state \(dictation))"
+                         : "\(key) released after \(String(format: "%.3f", Date().timeIntervalSince(pressedAt)))s (state \(dictation))")
         let (app, actions) = Self.parse(spec)
         guard let url = Self.appURL(app) else { return }
         if actions.contains("dictate") {
@@ -109,7 +126,9 @@ final class AppHotKeys {
             self.dictationPID = NSWorkspace.shared.frontmostApplication?.processIdentifier ?? 0
             // Prefer the app's own Edit → Start Dictation… (works whatever the Dictation
             // shortcut is); fall back to the "Press Control Key Twice" shortcut.
-            if !Self.pressMenuItem(prefix: "Start Dictation", pid: self.dictationPID) { Self.doubleTapControl() }
+            let viaMenu = Self.pressMenuItem(prefix: "Start Dictation", pid: self.dictationPID)
+            if !viaMenu { Self.doubleTapControl() }
+            Self.log("dictation started via \(viaMenu ? "Edit menu" : "Control×2")")
             self.dictation = .active
             if self.stopWhenStarted { self.stopDictation() }
         }
@@ -134,8 +153,19 @@ final class AppHotKeys {
         dictation = .idle; latched = false; stopWhenStarted = false
         Task { @MainActor in
             try? await Task.sleep(nanoseconds: 150_000_000)   // let the last words land
-            if !Self.pressMenuItem(prefix: "Stop Dictation", pid: pid) { Self.doubleTapControl() }
+            _ = pid
+            // Esc ends macOS Dictation and keeps the text (confirmed on this Mac; the
+            // menu item/Control×2 toggles did not stop it).
+            Self.tapKey(CGKeyCode(kVK_Escape))
+            Self.log("dictation stopped via Esc")
         }
+    }
+
+    static func tapKey(_ code: CGKeyCode) {
+        let src = CGEventSource(stateID: .hidSystemState)
+        CGEvent(keyboardEventSource: src, virtualKey: code, keyDown: true)?.post(tap: .cghidEventTap)
+        usleep(20_000)
+        CGEvent(keyboardEventSource: src, virtualKey: code, keyDown: false)?.post(tap: .cghidEventTap)
     }
 
     /// Finds a menu item whose title starts with `prefix` (e.g. "Start Dictation") in the
