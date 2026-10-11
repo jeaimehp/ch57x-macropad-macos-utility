@@ -14,6 +14,12 @@
 - Muse template: b1-1 = `f13` (Open Muse, bundle `com.meta.endo`); Dictate = `f14` with `# @app f14 com.meta.endo +dictate`
   → helper opens/focuses Muse, waits until frontmost (≤8 s), then posts Control×2 via CGEvent (flagsChanged).
   Needs **Accessibility** for MicroPad Menu (prompts on first Dictate press).
+- ✅ **Dictate final behaviour (user approved 2026-10-11): tap to start, tap again to stop.** Start = Muse's
+  Edit → "Start Dictation…" via AX (Control×2 fallback); stop = synthetic **Esc** (keeps text) — the
+  "Stop Dictation" menu item / Control×2 did NOT stop it on this Mac. Hold-to-talk was tried and rejected:
+  the pad appears to send F14 down+up together on release (dictation only started after letting go).
+  A real hold (≥0.5 s between down/up) would still stop on release. Key timing logged to
+  `~/Library/Logs/MicroPad Menu.log`.
 - **Pad flashed 2026-10-11 03:06Z with Meta Muse (macOS)** via `MicroPad Menu --flash meta-muse-macos` (exit 0,
   76 s); helper menu showed "F13 → open Muse, F14 → open Muse + dictate". Key presses not yet tried by user.
 - `MicroPad Menu --flash <template id|name|saved name>`: headless flash (validate → upload → PadState).
