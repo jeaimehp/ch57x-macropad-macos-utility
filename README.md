@@ -207,6 +207,14 @@ ch57x-keyboard-tool validate < templates/zoom-macos.yaml   # config goes via std
 ch57x-keyboard-tool upload   < templates/zoom-macos.yaml   # USB cable required; overwrites the pad
 ```
 
+## Contributors
+
+| Who | Contribution |
+|---|---|
+| **[jeaimehp](https://github.com/jeaimehp)** | Project owner — requirements, hardware testing, design direction (app icon, templates, labels) |
+| **Hermes** agent with **Qwen3.8-flash-next** | Initial pad config and CLI setup, milestone plan (`MILESTONES.md`), MicroPad Studio milestones M0–M6 (editor, live test, config library, import/export, packaging) and the first successful flash — commits `a2e39b6`…`5728dab` |
+| **Claude Code** (Claude Opus 5.5, Anthropic) | Templates guide and 13 templates, stable signing, app icon, printable labels and faceplate, MicroPad Menu (menu bar helper, app keys, dictation), pad-limit checks, colour UI, docs — commits `d343153` onward |
+
 ## Credits
 
 MicroPad Studio and MicroPad Menu are front-ends for

@@ -18,6 +18,8 @@
   Git (Terminal, oh-my-zsh aliases), iTerm2, Chrome, Notion, Evernote, iMovie, GIMP, Zoom (all macOS),
   Total Annihilation (Windows).
 - Docs: `README.md` (features + screenshots in `docs/screenshots/`), this file, `MILESTONES.md` (original plan).
+- **Contributors** (README): owner jeaimehp; Hermes agent w/ Qwen3.8-flash-next (commits a2e39b6…5728dab:
+  plan, M0–M6, first flash); Claude Code / Claude Opus 5.5 (d343153 onward).
 - **Remote:** public GitHub repo https://github.com/jeaimehp/ch57x-macropad-macos-utility (`origin`, branch `main`).
   History was pushed as-is (user's choice) — early commits still contain ~90 MB of DerivedData build cache.
 
