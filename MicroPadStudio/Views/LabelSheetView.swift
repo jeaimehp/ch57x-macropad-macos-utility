@@ -103,20 +103,23 @@ struct LabelSheetView: View {
 
     private func sticker(_ c: PadControl) -> some View {
         VStack(spacing: 1) {
-            Rectangle().fill(color(c)).frame(height: mm(1.6))
             Spacer(minLength: 0)
             Text(c.label)
-                .font(.system(size: 6.5, weight: .bold))
+                .font(.system(size: 6.5, weight: .heavy))
                 .multilineTextAlignment(.center)
                 .lineLimit(3).minimumScaleFactor(0.6)
                 .padding(.horizontal, 1.5)
             Text(c.keys)
-                .font(.system(size: 4.5, design: .monospaced))
+                .font(.system(size: 4.5, weight: .semibold, design: .monospaced))
                 .lineLimit(1).minimumScaleFactor(0.5)
                 .padding(.horizontal, 1.5)
             Spacer(minLength: 0)
         }
+        .foregroundStyle(.white)
+        .shadow(color: .black.opacity(0.45), radius: 0.4)
         .frame(width: mm(Self.keycapMM), height: mm(Self.keycapMM))
+        .background(LinearGradient(colors: [color(c), color(c).opacity(0.75)],
+                                   startPoint: .topLeading, endPoint: .bottomTrailing))
         .overlay(Rectangle().strokeBorder(style: StrokeStyle(lineWidth: 0.5, dash: [2, 1.5])))
     }
 
@@ -132,8 +135,11 @@ struct LabelSheetView: View {
                 }
             }
         }
+        .foregroundStyle(.white)
         .padding(mm(1.2))
         .frame(width: mm(Self.knobLegendMM.width), height: mm(Self.knobLegendMM.height), alignment: .topLeading)
+        .background(RoundedRectangle(cornerRadius: 3).fill(Color(white: 0.12)))
+        .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(FaceplateSheetView.knobGlow, lineWidth: 1))
         .overlay(RoundedRectangle(cornerRadius: 3)
             .strokeBorder(style: StrokeStyle(lineWidth: 0.5, dash: [2, 1.5])))
     }

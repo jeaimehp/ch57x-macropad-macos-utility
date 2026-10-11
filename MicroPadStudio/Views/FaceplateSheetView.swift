@@ -60,6 +60,19 @@ struct FaceplateSheetView: View {
         .environment(\.colorScheme, .light)
     }
 
+    // MARK: - Colours (match the app icon + editor keycaps)
+
+    /// Plate background: the icon's blue → purple → magenta sweep.
+    static let plateGradient = LinearGradient(
+        colors: [Color(red: 0.13, green: 0.40, blue: 0.98), Color(red: 0.42, green: 0.27, blue: 0.95),
+                 Color(red: 0.74, green: 0.24, blue: 0.86)],
+        startPoint: .topLeading, endPoint: .bottomTrailing)
+    static let knobGlow = Color(red: 0.35, green: 0.70, blue: 1.0)
+
+    private func keyColor(_ c: PadControl) -> Color {
+        PadDiagramView.palette[(c.number - 1) % PadDiagramView.palette.count]
+    }
+
     // MARK: - One overlay at true size
 
     private var faceplate: some View {
@@ -67,22 +80,31 @@ struct FaceplateSheetView: View {
         let cut = StrokeStyle(lineWidth: 0.6, dash: [3, 2])
         let w = g.keyWindow
         let knobR = g.knobHoleDiameter / 2
+        let plateShape = RoundedRectangle(cornerRadius: mm(g.plateCornerRadius))
         return ZStack(alignment: .topLeading) {
-            // Outline + knob hole (circle clipped to the plate so it reads as a notch).
-            RoundedRectangle(cornerRadius: mm(g.plateCornerRadius)).strokeBorder(style: cut)
-            Circle().stroke(style: cut)
-                .frame(width: mm(g.knobHoleDiameter), height: mm(g.knobHoleDiameter))
-                .offset(x: mm(g.knobCenter.x - knobR), y: mm(g.knobCenter.y - knobR))
-                .frame(width: mm(g.plate.width), height: mm(g.plate.height), alignment: .topLeading)
-                .clipShape(RoundedRectangle(cornerRadius: mm(g.plateCornerRadius)))
-            // Key window, hatched lightly so it's obvious what to remove.
-            RoundedRectangle(cornerRadius: mm(1)).fill(Color(white: 0.93))
+            plateShape.fill(Self.plateGradient)
+            // Knob hole: white (cut away) with a glowing ring around it, clipped → notch at the edge.
+            ZStack(alignment: .topLeading) {
+                Circle().stroke(Self.knobGlow, lineWidth: mm(1.4))
+                    .shadow(color: Self.knobGlow, radius: 3)
+                    .frame(width: mm(g.knobHoleDiameter + 1.6), height: mm(g.knobHoleDiameter + 1.6))
+                    .offset(x: mm(g.knobCenter.x - knobR - 0.8), y: mm(g.knobCenter.y - knobR - 0.8))
+                Circle().fill(Color.white)
+                    .overlay(Circle().stroke(style: cut))
+                    .frame(width: mm(g.knobHoleDiameter), height: mm(g.knobHoleDiameter))
+                    .offset(x: mm(g.knobCenter.x - knobR), y: mm(g.knobCenter.y - knobR))
+            }
+            .frame(width: mm(g.plate.width), height: mm(g.plate.height), alignment: .topLeading)
+            .clipShape(plateShape)
+            // Key window: white = cut away.
+            RoundedRectangle(cornerRadius: mm(1)).fill(Color.white)
                 .overlay(RoundedRectangle(cornerRadius: mm(1)).strokeBorder(style: cut))
                 .overlay(Text("cut out").font(.system(size: 7)).foregroundStyle(.gray))
                 .frame(width: mm(w.width), height: mm(w.height))
                 .offset(x: mm(w.minX), y: mm(w.minY))
 
             ForEach(controls) { c in label(for: c) }
+            plateShape.strokeBorder(style: cut)
         }
         .frame(width: mm(g.plate.width), height: mm(g.plate.height), alignment: .topLeading)
     }
@@ -102,36 +124,30 @@ struct FaceplateSheetView: View {
         let knob = controls.filter { if case .knob = $0.kind { return true } else { return false } }
         func knobLabel(_ part: String) -> PadControl? { knob.first { $0.id.hasSuffix("knob-\(part)") } }
         return ZStack(alignment: .topLeading) {
-            Rectangle().strokeBorder(style: StrokeStyle(lineWidth: 0.6, dash: [3, 2]))
+            Rectangle().fill(Self.plateGradient)
             ForEach(controls) { c in
                 if case .button(let row, let col) = c.kind, row == (top ? 0 : 1), col < g.columnCenters.count {
-                    Group {
-                        if top {
-                            text(c.label, size: 6, weight: .bold, lines: 1)
-                        } else {
-                            VStack(spacing: 0.5) {
-                                text(c.label, size: 6.5, weight: .bold, lines: 2)
-                                text(c.keys, size: 4.5, weight: .regular, lines: 1, mono: true)
-                            }
-                        }
-                    }
-                    .frame(width: mm(22), height: mm(height - 0.6))
-                    .offset(x: mm(g.columnCenters[col] - 11), y: mm(0.3))
+                    buttonLabel(c, compact: top)
+                        .frame(width: mm(22), height: mm(height - 0.6))
+                        .offset(x: mm(g.columnCenters[col] - 11), y: mm(0.3))
                 }
             }
-            VStack(spacing: 0.5) {
+            VStack(spacing: mm(0.5)) {
                 if top {
-                    if let cw = knobLabel("cw") { text("↻ \(cw.label)", size: 6, weight: .bold, lines: 1) }
+                    if let cw = knobLabel("cw") { knobPill("↻", cw) }
                 } else {
-                    if let p = knobLabel("press") { text("● \(p.label)", size: 6, weight: .bold, lines: 1) }
-                    if let ccw = knobLabel("ccw") { text("↺ \(ccw.label)", size: 6, weight: .bold, lines: 1) }
+                    if let p = knobLabel("press") { knobPill("●", p) }
+                    if let ccw = knobLabel("ccw") { knobPill("↺", ccw) }
                 }
             }
             .frame(width: mm(knobW), height: mm(height - 0.6))
             .offset(x: mm(knobX), y: mm(0.3))
+            Rectangle().strokeBorder(style: StrokeStyle(lineWidth: 0.6, dash: [3, 2]))
         }
         .frame(width: mm(g.plate.width), height: mm(height), alignment: .topLeading)
     }
+
+    // MARK: - Labels
 
     @ViewBuilder
     private func label(for c: PadControl) -> some View {
@@ -142,18 +158,13 @@ struct FaceplateSheetView: View {
             let colW: CGFloat = 22
             let x = g.columnCenters[col] - colW / 2
             if row == 0 {
-                // Top band: ~5 mm → one line.
-                text(c.label, size: 6, weight: .bold, lines: 1)
+                buttonLabel(c, compact: true)          // top band ≈5 mm
                     .frame(width: mm(colW), height: mm(w.minY - 0.6))
                     .offset(x: mm(x), y: mm(0.3))
             } else {
-                // Bottom band: ~10 mm → label + keys.
-                VStack(spacing: 0.5) {
-                    text(c.label, size: 6.5, weight: .bold, lines: 2)
-                    text(c.keys, size: 4.5, weight: .regular, lines: 1, mono: true)
-                }
-                .frame(width: mm(colW), height: mm(g.plate.height - w.maxY - 1))
-                .offset(x: mm(x), y: mm(w.maxY + 0.5))
+                buttonLabel(c, compact: false)         // bottom band ≈10 mm
+                    .frame(width: mm(colW), height: mm(g.plate.height - w.maxY - 1))
+                    .offset(x: mm(x), y: mm(w.maxY + 0.5))
             }
         case .knob(let part):
             let x = w.maxX + 2, width = g.plate.width - (w.maxX + 2) - 1
@@ -161,17 +172,41 @@ struct FaceplateSheetView: View {
             let bottom = g.knobCenter.y + g.knobHoleDiameter / 2
             let (y, h, symbol): (CGFloat, CGFloat, String) = {
                 switch part {
-                case "cw":    return (1, top - 1.5, "↻")
-                case "press": return (bottom + 0.8, 8, "●")
-                default:      return (bottom + 9, 8, "↺")
+                case "cw":    return (1, top - 2.5, "↻")
+                case "press": return (bottom + 2, 7, "●")
+                default:      return (bottom + 9.5, 7, "↺")
                 }
             }()
-            text("\(symbol) \(c.label)", size: 6, weight: .bold, lines: 2)
+            knobPill(symbol, c)
                 .frame(width: mm(width), height: mm(h))
                 .offset(x: mm(x), y: mm(y))
         default:
             EmptyView()
         }
+    }
+
+    /// Key-coloured pill with white text; the non-compact form adds the keystroke below.
+    private func buttonLabel(_ c: PadControl, compact: Bool) -> some View {
+        VStack(spacing: mm(0.4)) {
+            text(c.label, size: compact ? 5.5 : 6.5, weight: .heavy, lines: compact ? 1 : 2)
+                .foregroundStyle(.white)
+                .shadow(color: .black.opacity(0.45), radius: 0.4)   // contrast on yellow/green
+                .padding(.horizontal, mm(1.2)).padding(.vertical, mm(0.25))
+                .background(Capsule().fill(keyColor(c)))
+                .overlay(Capsule().strokeBorder(Color.white.opacity(0.85), lineWidth: 0.5))
+            if !compact {
+                text(c.keys, size: 4.5, weight: .semibold, lines: 1, mono: true)
+                    .foregroundStyle(.white)
+            }
+        }
+    }
+
+    private func knobPill(_ symbol: String, _ c: PadControl) -> some View {
+        text("\(symbol) \(c.label)", size: 5.5, weight: .heavy, lines: 1)
+            .foregroundStyle(.white)
+            .padding(.horizontal, mm(1.2)).padding(.vertical, mm(0.25))
+            .background(Capsule().fill(Color(white: 0.12)))
+            .overlay(Capsule().strokeBorder(Self.knobGlow, lineWidth: 0.6))
     }
 
     private func text(_ s: String, size: CGFloat, weight: Font.Weight, lines: Int, mono: Bool = false) -> some View {
