@@ -1,6 +1,7 @@
 # @title Finder & System (macOS)
-# @summary Mac system controls from the Finder — lock, mute, Focus, Terminal-here, window screenshot and a volume knob. Focus and Terminal-here use ⌃⌥⌘F / ⌃⌥⌘T, which you bind once in System Settings (or run scripts/setup_finder_shortcuts.sh).
-# @note b1-1 Lock Screen | ⌃⌘Q locks the Mac immediately (system shortcut).
+# @summary Mac system controls from the Finder — dictate anywhere, mute, Focus, Terminal-here, window screenshot and a volume knob. Dictate (F14) needs the MicroPad Menu helper running. Focus and Terminal-here use ⌃⌥⌘F / ⌃⌥⌘T, which you bind once in System Settings (or run scripts/setup_finder_shortcuts.sh).
+# @note b1-1 Dictate | Tap to start macOS Dictation in whatever app and text field you're in — speak instead of typing. Tap again to stop (text is kept). F14 — handled by MicroPad Menu (needs Accessibility once).
+# @app f14 +dictate
 # @note b1-2 Mute Sound | Mute key toggles system audio on/off.
 # @note b1-3 Focus On/Off | ⌃⌥⌘F toggles Do Not Disturb. One-time setup: System Settings → Keyboard → Keyboard Shortcuts → Mission Control → "Turn Do Not Disturb On/Off" = ⌃⌥⌘F.
 # @note b2-1 Terminal Here | ⌘↑ selects the current folder in its parent, then ⌃⌥⌘T runs the "New Terminal at Folder" service. The Finder window ends up one level up. One-time setup: Keyboard Shortcuts → Services → Files and Folders → "New Terminal at Folder" = ⌃⌥⌘T.
@@ -13,8 +14,8 @@
 # Finder & System (macOS) — 3x2 + 1 knob template
 #
 #   ┌──────────────┬──────────────┬──────────────┐
-#   │ ⌃⌘Q          │ Mute         │ ⌃⌥⌘F *       │   knob CCW   = volume down
-#   │ lock screen  │ mute sound   │ focus on/off │   knob press = play / pause
+#   │ F14 (helper) │ Mute         │ ⌃⌥⌘F *       │   knob CCW   = volume down
+#   │ dictate      │ mute sound   │ focus on/off │   knob press = play / pause
 #   ├──────────────┼──────────────┼──────────────┤   knob CW    = volume up
 #   │ ⌘↑ ⌃⌥⌘T *    │ ⌘⇧4 Space    │ ⌘⇧.          │
 #   │ terminal here│ screenshot   │ hidden files │
@@ -29,7 +30,7 @@ knobs: 1
 
 layers:
   - buttons:
-      - ["ctrl-cmd-q", "mute", "ctrl-alt-cmd-f"]
+      - ["f14", "mute", "ctrl-alt-cmd-f"]
       - ["cmd-up,ctrl-alt-cmd-t", "cmd-shift-4,space", "cmd-shift-dot"]
     knobs:
       - ccw: "volumedown"

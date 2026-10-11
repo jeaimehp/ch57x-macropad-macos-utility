@@ -87,12 +87,13 @@ final class AppHotKeys {
         Self.log(pressed ? "\(key) pressed (state \(dictation))"
                          : "\(key) released after \(String(format: "%.3f", Date().timeIntervalSince(pressedAt)))s (state \(dictation))")
         let (app, actions) = Self.parse(spec)
-        guard let url = Self.appURL(app) else { return }
+        // "+dictate" with no app = dictate into whatever app is already in front.
+        let url = app.isEmpty ? nil : Self.appURL(app)
         if actions.contains("dictate") {
             pressed ? dictatePressed(url) : dictateReleased()
             return
         }
-        guard pressed else { return }
+        guard pressed, let url else { return }
         activate(url)
     }
 
@@ -103,8 +104,8 @@ final class AppHotKeys {
         onFire?(url.deletingPathExtension().lastPathComponent)
     }
 
-    /// Press: a latched (tap-started) dictation stops; otherwise focus the app and start.
-    private func dictatePressed(_ url: URL) {
+    /// Press: a latched (tap-started) dictation stops; otherwise focus the app (if any) and start.
+    private func dictatePressed(_ url: URL?) {
         if dictation == .active && latched { stopDictation(); return }
         guard dictation == .idle else { return }
         let opts = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
@@ -114,15 +115,17 @@ final class AppHotKeys {
         }
         pressedAt = Date(); latched = false; stopWhenStarted = false
         dictation = .starting
-        activate(url)
+        if let url { activate(url) }
         Task { @MainActor in
-            // Wait for the app to be frontmost (covers a cold launch), max 8 s.
-            let deadline = Date().addingTimeInterval(8)
-            while NSWorkspace.shared.frontmostApplication?.bundleURL?.standardizedFileURL != url.standardizedFileURL {
-                if Date() > deadline { self.dictation = .idle; return }
-                try? await Task.sleep(nanoseconds: 50_000_000)
+            if let url {
+                // Wait for the app to be frontmost (covers a cold launch), max 8 s.
+                let deadline = Date().addingTimeInterval(8)
+                while NSWorkspace.shared.frontmostApplication?.bundleURL?.standardizedFileURL != url.standardizedFileURL {
+                    if Date() > deadline { self.dictation = .idle; return }
+                    try? await Task.sleep(nanoseconds: 50_000_000)
+                }
+                try? await Task.sleep(nanoseconds: 300_000_000)   // let its window take key focus
             }
-            try? await Task.sleep(nanoseconds: 300_000_000)   // let its window take key focus
             self.dictationPID = NSWorkspace.shared.frontmostApplication?.processIdentifier ?? 0
             // Prefer the app's own Edit → Start Dictation… (works whatever the Dictation
             // shortcut is); fall back to the "Press Control Key Twice" shortcut.
@@ -231,6 +234,7 @@ final class AppHotKeys {
 
     static func displayName(_ spec: String) -> String {
         let (app, actions) = parse(spec)
+        if app.isEmpty { return actions.contains("dictate") ? "dictate in the current app" : spec }
         let name = appURL(app)?.deletingPathExtension().lastPathComponent ?? app
         return actions.contains("dictate") ? "\(name) + dictate" : name
     }

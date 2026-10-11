@@ -52,7 +52,9 @@ enum MenuSelftest {
               AppHotKeys.appURL("no.such.app.xyz") == nil else { fail("appURL lookup") }
         let parsed = AppHotKeys.parse("com.meta.endo +dictate")
         guard parsed.app == "com.meta.endo", parsed.actions == ["dictate"],
-              AppHotKeys.parse("Muse").actions.isEmpty else { fail("@app spec parse") }
+              AppHotKeys.parse("Muse").actions.isEmpty,
+              AppHotKeys.parse("+dictate").app.isEmpty, AppHotKeys.parse("+dictate").actions == ["dictate"]
+        else { fail("@app spec parse") }
         let hk = AppHotKeys()
         guard hk.update(["f19": "com.apple.finder", "f99": "ignored"]) == 1 else { fail("hotkey register") }
         guard hk.update([:]) == 0 else { fail("hotkey unregister") }

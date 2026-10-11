@@ -20,6 +20,8 @@
   the pad appears to send F14 down+up together on release (dictation only started after letting go).
   A real hold (≥0.5 s between down/up) would still stop on release. Key timing logged to
   `~/Library/Logs/MicroPad Menu.log`.
+- `# @app f14 +dictate` (no app) = dictate into whatever app is frontmost. Finder template b1-1 is now this
+  (Lock Screen removed).
 - **Pad flashed 2026-10-11 03:06Z with Meta Muse (macOS)** via `MicroPad Menu --flash meta-muse-macos` (exit 0,
   76 s); helper menu showed "F13 → open Muse, F14 → open Muse + dictate". Key presses not yet tried by user.
 - `MicroPad Menu --flash <template id|name|saved name>`: headless flash (validate → upload → PadState).
