@@ -176,18 +176,20 @@ struct MicroPadStudioApp: App {
             let pdfDir = FileManager.default.temporaryDirectory.appendingPathComponent("mps-pdf-\(UUID().uuidString)")
             try FileManager.default.createDirectory(at: pdfDir, withIntermediateDirectories: true)
             for t in templates {
-                let url = pdfDir.appendingPathComponent("\(t.id).pdf")
-                try MainActor.assumeIsolated { try LabelSheetPDF.write(mapping: t.mapping, title: t.name, to: url) }
+              for style in [LabelSheetPDF.Style.stickers, .faceplate] {
+                let url = pdfDir.appendingPathComponent("\(t.id)-\(style == .faceplate ? "faceplate" : "stickers").pdf")
+                try MainActor.assumeIsolated { try LabelSheetPDF.write(mapping: t.mapping, title: t.name, style: style, to: url) }
                 let data = try Data(contentsOf: url)
                 guard data.count > 2000, data.prefix(4) == Data("%PDF".utf8),
                       let doc = CGPDFDocument(url as CFURL), doc.numberOfPages == 1,
                       doc.page(at: 1)?.getBoxRect(.mediaBox).size == LabelSheetView.page else {
-                    print("SELFTEST FAIL label PDF for '\(t.id)'"); exit(2)
+                    print("SELFTEST FAIL label PDF for '\(t.id)' \(style)"); exit(2)
                 }
+              }
             }
             if ProcessInfo.processInfo.environment["MPS_KEEP_PDF"] != nil { print("SELFTEST pdfs kept in \(pdfDir.path)") }
             else { try? FileManager.default.removeItem(at: pdfDir) }
-            print("SELFTEST label PDFs ok (\(templates.count) × 1-page Letter)")
+            print("SELFTEST label PDFs ok (\(templates.count) templates × stickers + faceplate, 1-page Letter)")
             print("SELFTEST templates ok (\(templates.map(\.name).joined(separator: ", ")))")
             print("SELFTEST PASS")
             exit(0)

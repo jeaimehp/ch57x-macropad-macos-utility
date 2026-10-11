@@ -149,16 +149,16 @@ struct TemplateGuideView: View {
 
     // MARK: - Labels PDF
 
-    private func printLabels() {
+    private func printLabels(_ style: LabelSheetPDF.Style) {
         guard let (name, m) = resolved else { return }
         let title = m.title ?? name
         let panel = NSSavePanel()
         panel.allowedContentTypes = [.pdf]
-        panel.nameFieldStringValue = "\(ConfigLibrary.sanitize(title)) labels.pdf"
+        panel.nameFieldStringValue = "\(ConfigLibrary.sanitize(title)) \(style == .faceplate ? "faceplate" : "labels").pdf"
         panel.directoryURL = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do {
-            try LabelSheetPDF.write(mapping: m, title: title, to: url)
+            try LabelSheetPDF.write(mapping: m, title: title, style: style, to: url)
             NSWorkspace.shared.open(url)     // opens in Preview, ready to print (⌘P)
             store.lastResult = "🖨 label sheet saved: \(url.lastPathComponent) — print at 100 %"
         } catch {
@@ -181,13 +181,15 @@ struct TemplateGuideView: View {
             default:
                 EmptyView()
             }
-            Button {
-                printLabels()
+            Menu {
+                Button("Keycap Stickers, Knob Legend & Desk Card…") { printLabels(.stickers) }
+                Button("Faceplate Overlay & Tape-on Strips…") { printLabels(.faceplate) }
             } label: {
-                Label("Print Labels (PDF)…", systemImage: "printer")
+                Label("Print Labels (PDF)", systemImage: "printer")
             }
+            .fixedSize()
             .disabled(resolved == nil)
-            .help("Make a printable sheet: keycap stickers, knob tags, desk card and reference")
+            .help("Make a printable, true-size label sheet for this config")
             Spacer()
             Text("Loading only changes the editor — use Upload to Pad to flash it.")
                 .font(.caption).foregroundStyle(.secondary)

@@ -56,9 +56,10 @@ test panel (buttons/knob/mouse via IOHIDManager).
 - **Templates** button: guide sheet listing built-in templates, saved configs and the
   current editor — each with a pictorial pad (functions printed on the keys/knob) and a
   numbered listing explaining every control. Load into editor / save to library.
-- **Print Labels (PDF)…** (Templates guide footer): one Letter page per config — true-size
-  keycap stickers (15 mm, two sets), knob tags, a desk card and a reference table, with a
-  50 mm scale bar. Print at 100 %.
+- **Print Labels (PDF)** menu (Templates guide footer), true-size Letter pages, print at 100 %:
+  - *Keycap Stickers*: 12 mm MX keycap stickers (two sets), knob legend, desk card, reference.
+  - *Faceplate Overlay & Tape-on Strips*: pad-shaped overlay with one key window + knob hole and
+    labels above/below the keys, or top/bottom strips to tape on. Geometry in `PadGeometry`.
 - **MicroPad Menu.app** (menu bar helper, no Dock icon): every template + saved config as a
   submenu with *Flash to Pad* and a control cheat sheet; ✓ marks what's on the pad
   (shared `pad-state.json`); uploads are flock-serialised with Studio. Launch at Login toggle.

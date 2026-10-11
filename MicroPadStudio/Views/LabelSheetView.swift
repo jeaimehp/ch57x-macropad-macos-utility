@@ -218,9 +218,19 @@ struct LabelSheetView: View {
 
 /// Renders `LabelSheetView` to a vector PDF.
 enum LabelSheetPDF {
+    enum Style { case stickers, faceplate }
+
     @MainActor
-    static func write(mapping: PadMapping, title: String, to url: URL) throws {
-        let renderer = ImageRenderer(content: LabelSheetView(mapping: mapping, title: title))
+    static func write(mapping: PadMapping, title: String, style: Style = .stickers, to url: URL) throws {
+        switch style {
+        case .stickers:  try render(LabelSheetView(mapping: mapping, title: title), to: url)
+        case .faceplate: try render(FaceplateSheetView(mapping: mapping, title: title), to: url)
+        }
+    }
+
+    @MainActor
+    private static func render<V: View>(_ view: V, to url: URL) throws {
+        let renderer = ImageRenderer(content: view)
         renderer.proposedSize = ProposedViewSize(LabelSheetView.page)
         var ok = false
         renderer.render { size, draw in

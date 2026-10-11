@@ -23,6 +23,9 @@
   (base 18.1 mm, flat top ≈12.7 mm), key pitch ≈21 mm (~3 mm gaps — no room for printed overlay text);
   knob ≈20 mm Ø flush with the right edge (no room for a ring); free plate below knob ≈18×22 mm →
   knob legend 17×20 mm.
+- **Faceplate PDF** (`FaceplateSheetView`, `PadGeometry`): pad-shaped 106×61 mm overlay with one 66×45.5 mm key
+  window + 22 mm knob hole (notch at the edge), top-row labels above / bottom-row below / knob labels right;
+  plus tape-on strips (top 5 mm, bottom 10.5 mm). Print Labels is now a menu: stickers vs faceplate+strips.
 - `package_dist.sh` builds/signs both apps; zip contains both.
 
 ## STATE 2026-10-10 — 📋 TEMPLATE GUIDE + CONTROL NOTES + APP ICON
